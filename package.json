@@ -10,7 +10,7 @@
     "lint": "eslint . --ext .js,.ts",
     "watch-ts": "tsc -w",
     "watch-node": "nodemon dist/server.js",
-    "start": "ts-node src/server.ts",
+    "start": "node dist/server.js",
     "watch": "nodemon"
   },
   "dependencies": {
