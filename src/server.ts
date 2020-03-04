@@ -6,7 +6,7 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const cors = require('cors');
 
-app.set('port', process.env.PORT || 3001);
+const PORT = process.env.PORT || 3001;
 app.use(cors());
 
 io.on('connection', function(socket: Socket) {
@@ -30,6 +30,6 @@ io.on('connection', function(socket: Socket) {
   });
 });
 
-http.listen(3001, function() {
-  console.log('Listening on localhost:3000');
+http.listen(PORT, function() {
+  console.log(`Listening on localhost:${PORT}`);
 });
