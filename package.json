@@ -10,7 +10,8 @@
     "lint": "eslint . --ext .js,.ts",
     "watch-ts": "tsc -w",
     "watch-node": "nodemon dist/server.js",
-    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript, Node\" -c \"yello.bold, cyan.bold\" \"yarn run watch-ts\" \"yarn run watch-node\""
+    "start": "ts-node src/server.ts",
+    "watch": "nodemon"
   },
   "dependencies": {
     "@types/express": "^4.17.2",
