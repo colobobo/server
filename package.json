@@ -25,6 +25,7 @@
     "typescript": "^3.8.3"
   },
   "devDependencies": {
+    "@types/fast-not-fat": "https://github.com/Fast-Not-Fat/types",
     "@typescript-eslint/eslint-plugin": "^2.22.0",
     "@typescript-eslint/parser": "^2.22.0",
     "eslint": "^6.8.0",
