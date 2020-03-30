@@ -5,6 +5,9 @@
   "repository": "https://github.com/Fast-Not-Fat/server",
   "author": "Fast Not Fat",
   "license": "MIT",
+  "engines": {
+    "node": "13.9.x"
+  },
   "scripts": {
     "build": "tsc",
     "lint": "eslint . --ext .js,.ts",
