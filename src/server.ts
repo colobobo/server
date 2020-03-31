@@ -1,7 +1,9 @@
+require('module-alias/register');
+
 import * as express from 'express';
 import { Socket } from 'socket.io';
 import { EventsRoom, PayloadsRoom } from 'fast-not-fat';
-import * as socketRoom from './sockets/room';
+import * as socketRoom from '@/sockets/room';
 import { log } from './utils';
 
 const app = express();
@@ -11,6 +13,8 @@ const cors = require('cors');
 
 const PORT = process.env.PORT || 3001;
 const rooms = io.sockets.adapter.rooms;
+
+global.rooms = new Map();
 
 app.use(cors());
 
