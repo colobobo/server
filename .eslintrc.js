@@ -8,7 +8,9 @@ module.exports =  {
     sourceType: 'module',
   },
   rules: {
-    semi: [2, "always"],
+    semi: [2, 'always'],
+    quotes: [2, 'single', 'avoid-escape'],
     '@typescript-eslint/no-var-requires': 0,
+    '@typescript-eslint/explicit-function-return-type': 0,
   },
 };

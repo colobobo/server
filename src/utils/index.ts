@@ -1,1 +1,1 @@
-export const log: (message: string) => void = (message: string | number) => console.log(message);
+export const log: (message: string | number | boolean) => void = (message: string | number) => console.log(message);

@@ -23,6 +23,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "fast-not-fat": "https://github.com/Fast-Not-Fat/types",
+    "module-alias": "^2.2.2",
     "nodemon": "^2.0.2",
     "socket.io": "^2.3.0",
     "ts-node": "^8.6.2",
@@ -35,5 +36,8 @@
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-prettier": "^3.1.2",
     "prettier": "^1.19.1"
+  },
+  "_moduleAliases": {
+    "@": "src"
   }
 }
