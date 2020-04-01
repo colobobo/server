@@ -11,16 +11,18 @@ export const create = (socket: Socket, device: PayloadsRoom.Create) => {
   const zeroPad = (num: number, places: number) => String(num).padStart(places, '0');
   const id = zeroPad(randomBetweenNumbers(1, 9999), 4);
 
-  const client = socket.join(id);
-  const room = new Room(id, socket);
+  socket.join(id, () => {
+    const room = new Room(id, socket);
 
-  room.addPlayer(new Player(client, socket, device));
-  global.rooms.set(id, room);
+    room.addPlayer(new Player(socket, device));
+    global.rooms.set(id, room);
 
-  socket.emit(EventsRoom.createSuccess, ({ data: { id } } as PayloadsRoom.CreateSuccess));
+    socket.emit(EventsRoom.createSuccess, ({ data: { id } } as PayloadsRoom.CreateSuccess));
+
+    log(`Created room ${id}`);
+  });
 
   // TODO: If it fails, emit error
-  log(`Created room ${id}`);
 };
 
 export const join = (socket: Socket, rooms: RoomInterface[], args: PayloadsRoom.Join) => {
@@ -29,15 +31,15 @@ export const join = (socket: Socket, rooms: RoomInterface[], args: PayloadsRoom.
 
   if (currentRoom) {
     if (currentRoom.players.size < gameProperties.players.max) {
-      const client = socket.join(id);
+      socket.join(id, () => {
+        currentRoom.addPlayer(new Player(socket, { width, height }));
 
-      currentRoom.addPlayer(new Player(client, socket, { width, height }));
+        socket.emit(EventsRoom.joinSuccess, ({
+          data: { id }
+        }) as PayloadsRoom.JoinSuccess);
 
-      socket.emit(EventsRoom.joinSuccess, ({
-        data: { id }
-      }) as PayloadsRoom.JoinSuccess);
-
-      log(`Joined room ${id}`);
+        log(`Joined room ${id}`);
+      });
     } else {
       socket.emit(EventsRoom.joinError, ({
         code: 2,

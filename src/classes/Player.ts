@@ -9,9 +9,9 @@ export class Player implements PlayerInterface {
   status: PlayerStatus;
   device: Device;
 
-  constructor(clientSocket: Socket, socket: Socket, device: Device) {
-    this.id = clientSocket.id;
-    this.clientSocket = clientSocket;
+  constructor(socket: Socket, device: Device) {
+    this.id = socket.id;
+    this.clientSocket = socket;
     this.socket = socket;
     this.status = PlayerStatus.active;
     this.device = device;

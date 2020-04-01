@@ -5,13 +5,11 @@ export class Room implements RoomInterface {
   id: string;
   socket: Socket;
   players: Map<string, PlayerInterface>;
-  length: number;
 
   constructor(id: string, socket: Socket) {
     this.id = id;
     this.socket = socket;
     this.players = new Map();
-    this.length = 0;
   }
 
   addPlayer(player: PlayerInterface) {
