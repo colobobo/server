@@ -1,47 +1,48 @@
-import { Socket } from 'socket.io';
 import { EventsRoom, PayloadsRoom } from 'fast-not-fat';
-import { RoomInterface } from '@/types';
 import { Player, Room } from '@/classes';
 import { gameProperties } from '@/config/game-properties';
 import { log } from '@/utils';
 
-export const create = (socket: Socket, device: PayloadsRoom.Create) => {
+export const create = function(device: PayloadsRoom.Create) {
   // TODO: Add id verification
   const randomBetweenNumbers = (min: number, max: number) => Math.floor(Math.random()*(max-min+1)+min);
   const zeroPad = (num: number, places: number) => String(num).padStart(places, '0');
   const id = zeroPad(randomBetweenNumbers(1, 9999), 4);
 
-  socket.join(id, () => {
-    const room = new Room(id, socket);
+  this.join(id, () => {
+    const room = new Room(id);
+    const player = new Player(this);
 
-    room.addPlayer(new Player(socket, device));
+    room.addPlayer(player);
+    room.game.area.addDeviceToArea(player.id, device);
+
     global.rooms.set(id, room);
 
-    socket.emit(EventsRoom.createSuccess, ({ data: { id } } as PayloadsRoom.CreateSuccess));
-
+    this.emit(EventsRoom.createSuccess, ({ data: { id } } as PayloadsRoom.CreateSuccess));
     log(`Created room ${id}`);
   });
 
   // TODO: If it fails, emit error
 };
 
-export const join = (socket: Socket, rooms: RoomInterface[], args: PayloadsRoom.Join) => {
+export const join = function(args: PayloadsRoom.Join) {
   const { id, width, height } = args;
   const currentRoom = global.rooms.get(id);
+  const player = new Player(this);
 
   if (currentRoom) {
     if (currentRoom.players.size < gameProperties.players.max) {
-      socket.join(id, () => {
-        currentRoom.addPlayer(new Player(socket, { width, height }));
+      this.join(id, () => {
+        currentRoom.addPlayer(player);
+        currentRoom.game.area.addDeviceToArea(player.id, { width, height });
 
-        socket.emit(EventsRoom.joinSuccess, ({
+        this.emit(EventsRoom.joinSuccess, ({
           data: { id }
         }) as PayloadsRoom.JoinSuccess);
-
         log(`Joined room ${id}`);
       });
     } else {
-      socket.emit(EventsRoom.joinError, ({
+      this.emit(EventsRoom.joinError, ({
         code: 2,
         data: null,
         message: 'Room is full'
@@ -49,7 +50,7 @@ export const join = (socket: Socket, rooms: RoomInterface[], args: PayloadsRoom.
       log('Room is full');
     }
   } else {
-    socket.emit(EventsRoom.joinError, ({
+    this.emit(EventsRoom.joinError, ({
       code: 1,
       data: null,
       message: 'Room does not exists'

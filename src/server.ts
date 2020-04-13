@@ -2,7 +2,7 @@ require('module-alias/register');
 
 import * as express from 'express';
 import { Socket } from 'socket.io';
-import { EventsRoom, PayloadsRoom } from 'fast-not-fat';
+import { EventsRoom } from 'fast-not-fat';
 import * as socketRoom from '@/sockets/room';
 import { log } from './utils';
 
@@ -12,15 +12,15 @@ const io = require('socket.io')(http);
 const cors = require('cors');
 
 const PORT = process.env.PORT || 3001;
-const rooms = io.sockets.adapter.rooms;
 
 global.rooms = new Map();
+global.io = io;
 
 app.use(cors());
 
 io.on('connection', function(socket: Socket) {
-  socket.on(EventsRoom.create, (args: PayloadsRoom.Create) => socketRoom.create(socket, args));
-  socket.on(EventsRoom.join, (args: PayloadsRoom.Join) => socketRoom.join(socket, rooms, args));
+  socket.on(EventsRoom.create, socketRoom.create.bind(socket));
+  socket.on(EventsRoom.join, socketRoom.join.bind(socket));
 });
 
 http.listen(PORT, function() {

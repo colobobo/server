@@ -1,10 +1,10 @@
 import { Socket } from 'socket.io';
-import { Device } from 'fast-not-fat';
+import { Game } from '@/classes';
 
 export interface RoomInterface {
   id: string;
-  socket: Socket;
   players: Map<string, PlayerInterface>;
+  game: Game;
   addPlayer: (player: PlayerInterface) => void;
 }
 
@@ -14,8 +14,6 @@ export enum PlayerStatus {
 }
 export interface PlayerInterface {
   id: string;
-  clientSocket: Socket;
   socket: Socket;
   status: PlayerStatus;
-  device: Device;
 }

@@ -1,15 +1,16 @@
-import { Socket } from 'socket.io';
 import { PlayerInterface, PlayerStatus, RoomInterface } from '@/types';
+import { Game } from '@/classes/Game';
 
 export class Room implements RoomInterface {
   id: string;
-  socket: Socket;
   players: Map<string, PlayerInterface>;
+  game: Game;
 
-  constructor(id: string, socket: Socket) {
+  constructor(id: string) {
     this.id = id;
-    this.socket = socket;
     this.players = new Map();
+
+    this.createGame();
   }
 
   addPlayer(player: PlayerInterface) {
@@ -20,6 +21,10 @@ export class Room implements RoomInterface {
       // TODO: Set global status to pause
       if (!this.roomActive) global.rooms.delete(this.id);
     });
+  }
+
+  createGame() {
+    this.game = new Game(this);
   }
 
   get roomActive() {
