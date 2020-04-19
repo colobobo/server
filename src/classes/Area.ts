@@ -41,6 +41,6 @@ export class Area {
           Object.assign(obj, { [key]: value }) // Be careful! Maps can have non-String keys; object literals can't.
         ), {})
       }
-    } as PayloadsArea.Updare);
+    } as PayloadsArea.Update);
   }
 }

@@ -1,3 +1,4 @@
+import { EventsGame } from 'fast-not-fat';
 import { PlayerInterface, PlayerStatus, RoomInterface } from '@/types';
 import { Game } from '@/classes/Game';
 
@@ -19,12 +20,19 @@ export class Room implements RoomInterface {
     player.socket.on('disconnect', () => {
       player.status = PlayerStatus.absent;
       // TODO: Set global status to pause
-      if (!this.roomActive) global.rooms.delete(this.id);
+      if (!this.roomActive) {
+        this.game.kill();
+        global.rooms.delete(this.id);
+      }
     });
   }
 
   createGame() {
     this.game = new Game(this);
+
+    global.io.in(this.id).on(EventsGame.start, () => {
+      this.game.start();
+    });
   }
 
   get roomActive() {
