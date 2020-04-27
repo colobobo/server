@@ -16,7 +16,7 @@ export class Game {
   }
 
   init() {
-    this.interval = setInterval(this.moveElement, gameProperties.tick);
+    //
   }
 
   moveElement = () => {
@@ -29,13 +29,15 @@ export class Game {
     }
 
     global.io.in(this.room.id).emit(EventsGame.tick, {
-      data: { x: this.x, y: this.area.height / 2 }
+      data: { x: this.x, y: this.area.height / 2 },
     } as PayloadsGame.Tick);
   };
 
   start() {
     global.io.in(this.room.id).emit(EventsGame.startSuccess);
     // TODO: Add global.io.in(this.room.id).emit('game:start:error');
+
+    this.interval = setInterval(this.moveElement, gameProperties.tick);
   }
 
   kill() {

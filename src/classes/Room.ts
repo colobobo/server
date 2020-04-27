@@ -25,20 +25,20 @@ export class Room implements RoomInterface {
         global.rooms.delete(this.id);
       }
     });
+
+    player.socket.on(EventsGame.start, () => {
+      this.game.start();
+    });
   }
 
   createGame() {
     this.game = new Game(this);
-
-    global.io.in(this.id).on(EventsGame.start, () => {
-      this.game.start();
-    });
   }
 
   get roomActive() {
     let roomActive = false;
 
-    Array.from(this.players.values()).forEach((player) => {
+    Array.from(this.players.values()).forEach(player => {
       if (player.status === 'active') roomActive = true;
     });
 
