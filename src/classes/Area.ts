@@ -18,11 +18,14 @@ export class Area {
     this.devices.set(playerId, {
       ...device,
       offsetX: this.width,
-      position: this.devices.size
+      position: this.devices.size,
     });
 
     this.width += device.width;
-    if (device.height > this.height) this.height = device.height;
+
+    if (this.height === 0 || device.height < this.height) {
+      this.height = device.height;
+    }
 
     this.emitAreaUpdate();
   }
@@ -37,10 +40,11 @@ export class Area {
       data: {
         width: this.width,
         height: this.height,
-        devices: Array.from(this.devices).reduce((obj, [key, value]) => (
-          Object.assign(obj, { [key]: value }) // Be careful! Maps can have non-String keys; object literals can't.
-        ), {})
-      }
+        devices: Array.from(this.devices).reduce(
+          (obj, [key, value]) => Object.assign(obj, { [key]: value }), // Be careful! Maps can have non-String keys; object literals can't.
+          {},
+        ),
+      },
     } as PayloadsArea.Update);
   }
 }

@@ -20,7 +20,7 @@ export class Game {
   }
 
   moveElement = () => {
-    const offset = 2;
+    const offset = 15;
 
     if (this.x + offset < this.area.width) {
       this.x = this.x + offset;
@@ -29,7 +29,11 @@ export class Game {
     }
 
     global.io.in(this.room.id).emit(EventsGame.tick, {
-      data: { x: this.x, y: this.area.height / 2 },
+      data: {
+        x: this.x,
+        y: this.area.height / 2,
+        tick: gameProperties.tick,
+      },
     } as PayloadsGame.Tick);
   };
 
