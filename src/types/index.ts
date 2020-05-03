@@ -10,7 +10,7 @@ export interface RoomInterface {
 
 export enum PlayerStatus {
   active = 'active',
-  absent = 'absent'
+  absent = 'absent',
 }
 export interface PlayerInterface {
   id: string;
