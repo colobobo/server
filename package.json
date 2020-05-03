@@ -22,7 +22,7 @@
     "concurrently": "^5.1.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "fast-not-fat": "https://github.com/Fast-Not-Fat/types",
+    "fast-not-fat": "git+https://github.com/Fast-Not-Fat/types.git",
     "module-alias": "^2.2.2",
     "nodemon": "^2.0.2",
     "socket.io": "^2.3.0",
@@ -35,9 +35,21 @@
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-prettier": "^3.1.2",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.2",
     "prettier": "^1.19.1"
   },
   "_moduleAliases": {
     "@": "src"
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+      "npm run prettier --write"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged & npm update fast-not-fat"
+    }
   }
 }
