@@ -1,4 +1,4 @@
-import { EventsGame, PayloadsGame } from 'fast-not-fat';
+import { events, payloads } from 'fast-not-fat';
 import { Area } from '@/classes/Area';
 import { Room } from '@/classes';
 import { gameProperties } from '@/config/game-properties';
@@ -28,17 +28,17 @@ export class Game {
       this.x = 0;
     }
 
-    global.io.in(this.room.id).emit(EventsGame.tick, {
+    global.io.in(this.room.id).emit(events.game.tick, {
       data: {
         x: this.x,
         y: this.area.height / 2,
         tick: gameProperties.tick,
       },
-    } as PayloadsGame.Tick);
+    } as payloads.game.Tick);
   };
 
   start() {
-    global.io.in(this.room.id).emit(EventsGame.startSuccess);
+    global.io.in(this.room.id).emit(events.game.startSuccess);
     // TODO: Add global.io.in(this.room.id).emit('game:start:error');
 
     this.interval = setInterval(this.moveElement, gameProperties.tick);

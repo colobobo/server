@@ -50,7 +50,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged & npm update fast-not-fat"
+      "pre-commit": "lint-staged & npm update fast-not-fat && git add package-lock.json"
     }
   }
 }

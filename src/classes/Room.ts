@@ -1,4 +1,4 @@
-import { EventsGame } from 'fast-not-fat';
+import { events } from 'fast-not-fat';
 import { PlayerInterface, PlayerStatus, RoomInterface } from '@/types';
 import { Game } from '@/classes/Game';
 
@@ -26,7 +26,7 @@ export class Room implements RoomInterface {
       }
     });
 
-    player.socket.on(EventsGame.start, () => {
+    player.socket.on(events.game.start, () => {
       this.game.start();
     });
   }

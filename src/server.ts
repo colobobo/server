@@ -2,7 +2,7 @@ require('module-alias/register');
 
 import * as express from 'express';
 import { Socket } from 'socket.io';
-import { EventsRoom } from 'fast-not-fat';
+import { events } from 'fast-not-fat';
 import * as socketRoom from '@/sockets/room';
 import { log } from './utils';
 
@@ -19,8 +19,8 @@ global.io = io;
 app.use(cors());
 
 io.on('connection', function(socket: Socket) {
-  socket.on(EventsRoom.create, socketRoom.create.bind(socket));
-  socket.on(EventsRoom.join, socketRoom.join.bind(socket));
+  socket.on(events.room.create, socketRoom.create.bind(socket));
+  socket.on(events.room.join, socketRoom.join.bind(socket));
 });
 
 http.listen(PORT, function() {

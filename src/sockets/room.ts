@@ -1,9 +1,9 @@
-import { EventsRoom, PayloadsRoom } from 'fast-not-fat';
+import { events, payloads } from 'fast-not-fat';
 import { Player, Room } from '@/classes';
 import { gameProperties } from '@/config/game-properties';
 import { log } from '@/utils';
 
-export const create = function(device: PayloadsRoom.Create) {
+export const create = function(device: payloads.room.Create) {
   // TODO: Add id verification
   const randomBetweenNumbers = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
   const zeroPad = (num: number, places: number) => String(num).padStart(places, '0');
@@ -18,19 +18,19 @@ export const create = function(device: PayloadsRoom.Create) {
 
     global.rooms.set(id, room);
 
-    this.emit(EventsRoom.createSuccess, {
+    this.emit(events.room.createSuccess, {
       data: {
         id,
         deviceId: player.id,
       },
-    } as PayloadsRoom.CreateSuccess);
+    } as payloads.room.CreateSuccess);
     log(`Created room ${id}`);
   });
 
   // TODO: If it fails, emit error
 };
 
-export const join = function(args: PayloadsRoom.Join) {
+export const join = function(args: payloads.room.Join) {
   const { id, width, height } = args;
   const currentRoom = global.rooms.get(id);
   const player = new Player(this);
@@ -41,28 +41,28 @@ export const join = function(args: PayloadsRoom.Join) {
         currentRoom.addPlayer(player);
         currentRoom.game.area.addDeviceToArea(player.id, { width, height });
 
-        this.emit(EventsRoom.joinSuccess, {
+        this.emit(events.room.joinSuccess, {
           data: {
             id,
             deviceId: player.id,
           },
-        } as PayloadsRoom.JoinSuccess);
+        } as payloads.room.JoinSuccess);
         log(`Joined room ${id}`);
       });
     } else {
-      this.emit(EventsRoom.joinError, {
+      this.emit(events.room.joinError, {
         code: 2,
         data: null,
         message: 'Room is full',
-      } as PayloadsRoom.JoinError);
+      } as payloads.room.JoinError);
       log('Room is full');
     }
   } else {
-    this.emit(EventsRoom.joinError, {
+    this.emit(events.room.joinError, {
       code: 1,
       data: null,
       message: 'Room does not exists',
-    } as PayloadsRoom.JoinError);
+    } as payloads.room.JoinError);
     log('Room does not exists');
   }
 };

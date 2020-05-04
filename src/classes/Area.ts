@@ -1,4 +1,4 @@
-import { AreaDevice, EventsArea, Device, PayloadsArea } from 'fast-not-fat';
+import { AreaDevice, Device, events, payloads } from 'fast-not-fat';
 import { Room } from '@/classes';
 
 export class Area {
@@ -36,7 +36,7 @@ export class Area {
   }
 
   emitAreaUpdate() {
-    global.io.in(this.room.id).emit(EventsArea.update, {
+    global.io.in(this.room.id).emit(events.area.update, {
       data: {
         width: this.width,
         height: this.height,
@@ -45,6 +45,6 @@ export class Area {
           {},
         ),
       },
-    } as PayloadsArea.Update);
+    } as payloads.area.Update);
   }
 }
