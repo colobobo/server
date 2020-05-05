@@ -8,6 +8,7 @@ export class Game {
   area: Area;
   interval: any;
   x: number;
+  y: number;
 
   constructor(room: Room) {
     this.room = room;
@@ -27,21 +28,29 @@ export class Game {
     } else {
       this.x = 0;
     }
+  };
 
+  updatePosition({ x, y }: { x: number; y: number }) {
+    this.x = x;
+    this.y = y;
+  }
+
+  tick() {
     global.io.in(this.room.id).emit(events.game.tick, {
       data: {
         x: this.x,
-        y: this.area.height / 2,
+        y: this.y,
         tick: gameProperties.tick,
       },
     } as payloads.game.Tick);
-  };
+  }
 
   start() {
     global.io.in(this.room.id).emit(events.game.startSuccess);
     // TODO: Add global.io.in(this.room.id).emit('game:start:error');
 
-    this.interval = setInterval(this.moveElement, gameProperties.tick);
+    // start tick
+    this.interval = setInterval(this.tick.bind(this), gameProperties.tick);
   }
 
   kill() {
