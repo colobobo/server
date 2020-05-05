@@ -12,11 +12,14 @@ const io = require('socket.io')(http);
 const cors = require('cors');
 
 const PORT = process.env.PORT || 3001;
+const corsOptions = {
+  origin: '*', // TODO: Update value
+};
 
 global.rooms = new Map();
 global.io = io;
 
-app.use(cors());
+app.use(cors(corsOptions));
 
 io.on('connection', function(socket: Socket) {
   socket.on(events.room.create, socketRoom.create.bind(socket));
