@@ -31,7 +31,7 @@ export class Room implements RoomInterface {
     });
 
     player.socket.on(events.game.positionUpdate, (e: payloads.game.PositionUpdate) => {
-      this.game.updatePosition(e.data);
+      this.game.updatePosition(e);
     });
   }
 

@@ -9,6 +9,7 @@ export class Game {
   interval: any;
   x: number;
   y: number;
+  objects: { [id: string]: { x: number; y: number } };
 
   constructor(room: Room) {
     this.room = room;
@@ -17,29 +18,31 @@ export class Game {
   }
 
   init() {
-    //
+    this.objects = {
+      'object-1': {
+        x: 0,
+        y: 0,
+      },
+      'object-2': {
+        x: 0,
+        y: 150,
+      },
+      'object-3': {
+        x: 0,
+        y: 250,
+      },
+    };
   }
 
-  moveElement = () => {
-    const offset = 15;
-
-    if (this.x + offset < this.area.width) {
-      this.x = this.x + offset;
-    } else {
-      this.x = 0;
-    }
-  };
-
-  updatePosition({ x, y }: { x: number; y: number }) {
-    this.x = x;
-    this.y = y;
+  updatePosition({ x, y, id }: { x: number; y: number; id: string }) {
+    this.objects[id].x = x;
+    this.objects[id].y = y;
   }
 
   tick() {
     global.io.in(this.room.id).emit(events.game.tick, {
       data: {
-        x: this.x,
-        y: this.y,
+        objects: this.objects,
         tick: gameProperties.tick,
       },
     } as payloads.game.Tick);
