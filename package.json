@@ -40,9 +40,6 @@
     "lint-staged": "^10.2.2",
     "prettier": "^1.19.1"
   },
-  "_moduleAliases": {
-    "@": "src"
-  },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "prettier --write"

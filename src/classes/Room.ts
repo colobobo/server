@@ -1,6 +1,6 @@
 import { events, payloads } from 'fast-not-fat';
 import { PlayerInterface, PlayerStatus, RoomInterface } from '@/types';
-import { Game } from '@/classes/Game';
+import { Game } from '@/classes';
 
 export class Room implements RoomInterface {
   id: string;

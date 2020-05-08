@@ -1,5 +1,5 @@
 import { events, payloads } from 'fast-not-fat';
-import { Area } from '@/classes/Area';
+import { Area } from '@/classes';
 import { Room } from '@/classes';
 import { gameProperties } from '@/config/game-properties';
 

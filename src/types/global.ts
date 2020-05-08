@@ -1,4 +1,4 @@
-import { RoomInterface } from '@/types/index';
+import { RoomInterface } from '@/types';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace

@@ -1,4 +1,5 @@
-require('module-alias/register');
+import { addAlias } from 'module-alias';
+addAlias('@', __dirname);
 
 import * as express from 'express';
 import { Socket } from 'socket.io';
@@ -16,7 +17,7 @@ const PORT = process.env.PORT || 3001;
 global.rooms = new Map();
 global.io = io;
 
-app.use(cors);
+app.use(cors());
 
 io.on('connection', function(socket: Socket) {
   socket.on(events.room.create, socketRoom.create.bind(socket));
