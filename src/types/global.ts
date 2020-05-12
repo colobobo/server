@@ -1,3 +1,4 @@
+import { Socket as SocketIo } from 'socket.io';
 import { RoomInterface } from '@/types';
 
 declare global {
@@ -5,8 +6,7 @@ declare global {
   namespace NodeJS {
     interface Global {
       rooms: Map<string, RoomInterface>;
-      // TODO: Add type
-      io: any;
+      io: SocketIo;
     }
   }
 }
