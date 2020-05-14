@@ -10,7 +10,15 @@ export const emitErrorCallback = <T>(code: number, message: string): payloads.Pa
   data: null,
 });
 
-export const emitGlobal = <T>({ roomId, eventName, data }: { roomId: string; eventName: string; data: T[keyof T] }) => {
+export const emitGlobal = <T>({
+  roomId,
+  eventName,
+  data,
+}: {
+  roomId: string;
+  eventName: string;
+  data?: T[keyof T];
+}) => {
   global.io.in(roomId).emit(eventName, emitCallback<T>(data));
 };
 

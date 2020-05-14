@@ -53,7 +53,7 @@ export class Game {
 
   start() {
     this.interval = setInterval(this.tick.bind(this), gameProperties.tick);
-    emitGlobal<{ data: null }>({ roomId: this.room.id, eventName: events.game.startSuccess, data: null });
+    emitGlobal({ roomId: this.room.id, eventName: events.game.startSuccess });
     // TODO: Add global.io.in(this.room.id).emit('game:start:error');
   }
 
