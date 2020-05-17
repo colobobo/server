@@ -1,4 +1,4 @@
-import { events, payloads } from 'fast-not-fat';
+import { events, payloads, GameObjects } from 'fast-not-fat';
 import { Area } from '@/classes';
 import { Room } from '@/classes';
 import { gameProperties } from '@/config/game-properties';
@@ -9,7 +9,7 @@ export class Game {
   interval: any;
   x: number;
   y: number;
-  objects: { [id: string]: { x: number; y: number } };
+  objects: GameObjects;
 
   constructor(room: Room) {
     this.room = room;
@@ -22,14 +22,23 @@ export class Game {
       'object-1': {
         x: 0,
         y: 0,
+        width: 180,
+        height: 180,
+        color: '#ffe136',
       },
       'object-2': {
         x: 0,
         y: 150,
+        width: 130,
+        height: 130,
+        color: '#ff7ade',
       },
       'object-3': {
         x: 0,
         y: 250,
+        width: 100,
+        height: 100,
+        color: '#3ced7e',
       },
     };
   }
