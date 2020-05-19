@@ -1,33 +1,25 @@
 import { events, payloads } from 'fast-not-fat';
 import { Player, Room } from '@/classes';
 import { gameProperties } from '@/config/game-properties';
-import { log } from '@/utils';
+import { emitCallback, emitErrorCallback, generateUid, log } from '@/utils';
 
 export const create = function(device: payloads.room.Create) {
-  // TODO: Add id verification
-  const randomBetweenNumbers = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
-  const zeroPad = (num: number, places: number) => String(num).padStart(places, '0');
-  const id = zeroPad(randomBetweenNumbers(1, 9999), 4);
+  const uid = generateUid();
 
-  this.join(id, () => {
-    const room = new Room(id);
+  this.join(uid, () => {
+    const room = new Room(uid);
     const player = new Player(this);
 
     room.addPlayer(player);
     room.game.area.addDeviceToArea(player.id, device);
+    global.rooms.set(uid, room);
 
-    global.rooms.set(id, room);
-
-    this.emit(events.room.createSuccess, {
-      data: {
-        id,
-        deviceId: player.id,
-      },
-    } as payloads.room.CreateSuccess);
-    log(`Created room ${id}`);
+    this.emit(
+      events.room.createSuccess,
+      emitCallback<payloads.room.CreateSuccess>({ id: uid, deviceId: player.id }),
+    );
+    log(`Created room ${uid}`);
   });
-
-  // TODO: If it fails, emit error
 };
 
 export const join = function(args: payloads.room.Join) {
@@ -41,28 +33,18 @@ export const join = function(args: payloads.room.Join) {
         currentRoom.addPlayer(player);
         currentRoom.game.area.addDeviceToArea(player.id, { width, height });
 
-        this.emit(events.room.joinSuccess, {
-          data: {
-            id,
-            deviceId: player.id,
-          },
-        } as payloads.room.JoinSuccess);
+        this.emit(
+          events.room.joinSuccess,
+          emitCallback<payloads.room.JoinSuccess>({ id, deviceId: player.id }),
+        );
         log(`Joined room ${id}`);
       });
     } else {
-      this.emit(events.room.joinError, {
-        code: 2,
-        data: null,
-        message: 'Room is full',
-      } as payloads.room.JoinError);
+      this.emit(events.room.joinError, emitErrorCallback<payloads.room.JoinError>(2, 'Room is full'));
       log('Room is full');
     }
   } else {
-    this.emit(events.room.joinError, {
-      code: 1,
-      data: null,
-      message: 'Room does not exists',
-    } as payloads.room.JoinError);
+    this.emit(events.room.joinError, emitErrorCallback<payloads.room.JoinError>(1, 'Room does not exists'));
     log('Room does not exists');
   }
 };

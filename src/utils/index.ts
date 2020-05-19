@@ -1,1 +1,3 @@
-export const log: (message: string | number | boolean) => void = (message: string | number) => console.log(message);
+export { emitCallback, emitErrorCallback, emitGlobal, emitErrorGlobal } from './emit';
+export { log } from './logs';
+export { generateUid } from './uid';

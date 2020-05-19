@@ -2,6 +2,7 @@ import { events, payloads, GameObjects } from 'fast-not-fat';
 import { Area } from '@/classes';
 import { Room } from '@/classes';
 import { gameProperties } from '@/config/game-properties';
+import { emitGlobal } from '@/utils';
 
 export class Game {
   room: Room;
@@ -49,20 +50,20 @@ export class Game {
   }
 
   tick() {
-    global.io.in(this.room.id).emit(events.game.tick, {
+    emitGlobal<payloads.game.Tick>({
+      roomId: this.room.id,
+      eventName: events.game.tick,
       data: {
         objects: this.objects,
         tick: gameProperties.tick,
       },
-    } as payloads.game.Tick);
+    });
   }
 
   start() {
-    global.io.in(this.room.id).emit(events.game.startSuccess);
-    // TODO: Add global.io.in(this.room.id).emit('game:start:error');
-
-    // start tick
     this.interval = setInterval(this.tick.bind(this), gameProperties.tick);
+    emitGlobal({ roomId: this.room.id, eventName: events.game.startSuccess });
+    // TODO: Add global.io.in(this.room.id).emit('game:start:error');
   }
 
   kill() {

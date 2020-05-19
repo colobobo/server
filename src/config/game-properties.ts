@@ -3,5 +3,5 @@ export const gameProperties = {
     min: 3,
     max: 6,
   },
-  tick: (1000 / 60) * 1,
+  tick: (1000 / 60) * 2,
 };
