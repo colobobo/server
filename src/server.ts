@@ -3,7 +3,7 @@ addAlias('@', __dirname);
 
 import * as express from 'express';
 import { Socket } from 'socket.io';
-import { events } from 'fast-not-fat';
+import { events } from '@colobobo/library';
 import * as socketRoom from '@/sockets/room';
 import { log } from './utils';
 

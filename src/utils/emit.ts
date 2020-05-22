@@ -1,4 +1,4 @@
-import { payloads } from 'fast-not-fat';
+import { payloads } from '@colobobo/library';
 
 export const emitCallback = <T>(data: T[keyof T]): payloads.PayloadSocket<T[keyof T]> => {
   return { data };

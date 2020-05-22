@@ -1,4 +1,4 @@
-import { AreaDevice, Device, events, payloads } from 'fast-not-fat';
+import { AreaDevice, Device, events, payloads } from '@colobobo/library';
 import { Room } from '@/classes';
 import { emitGlobal } from '@/utils';
 

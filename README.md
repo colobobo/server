@@ -3,7 +3,7 @@
 ## Getting started
 ```bash
 # 1. Clone the repository.
-git clone git@github.com:Fast-Not-Fat/server.git server
+git clone git@github.com:colobobo/server.git server
 
 # 2. Enter your newly-cloned folder.
 cd server

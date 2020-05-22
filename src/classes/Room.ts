@@ -1,4 +1,4 @@
-import { events, payloads } from 'fast-not-fat';
+import { events, payloads } from '@colobobo/library';
 import { PlayerInterface, PlayerStatus, RoomInterface } from '@/types';
 import { Game } from '@/classes';
 

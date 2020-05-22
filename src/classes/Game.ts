@@ -1,4 +1,4 @@
-import { events, payloads, GameObjects } from 'fast-not-fat';
+import { events, payloads, GameObjects } from '@colobobo/library';
 import { Area } from '@/classes';
 import { Room } from '@/classes';
 import { gameProperties } from '@/config/game-properties';

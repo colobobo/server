@@ -1,4 +1,4 @@
-import { events, payloads } from 'fast-not-fat';
+import { events, payloads } from '@colobobo/library';
 import { Player, Room } from '@/classes';
 import { gameProperties } from '@/config/game-properties';
 import { emitCallback, emitErrorCallback, generateUid, log } from '@/utils';
