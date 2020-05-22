@@ -1,5 +1,5 @@
 {
-  "name": "fast-not-fat-server",
+  "name": "@colobobo/server",
   "version": "1.0.0",
   "main": "src/server.ts",
   "repository": "https://github.com/Fast-Not-Fat/server",
