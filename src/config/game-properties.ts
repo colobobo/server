@@ -4,4 +4,5 @@ export const gameProperties = {
     max: 6,
   },
   tick: (1000 / 60) * 2,
+  life: 4,
 };

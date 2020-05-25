@@ -1,5 +1,5 @@
-import { events, payloads } from '@colobobo/library';
-import { PlayerInterface, PlayerStatus, RoomInterface } from '@/types';
+import { events, payloads, PlayerStatus } from '@colobobo/library';
+import { PlayerInterface, RoomInterface } from '@/types';
 import { Game } from '@/classes';
 
 export class Room implements RoomInterface {
@@ -10,33 +10,26 @@ export class Room implements RoomInterface {
   constructor(id: string) {
     this.id = id;
     this.players = new Map();
-
-    this.createGame();
+    this.game = new Game(this);
   }
 
   addPlayer(player: PlayerInterface) {
     this.players.set(player.id, player);
 
+    player.socket.on(events.game.start, () => this.game.start());
+    player.socket.on(events.player.ready, () => this.game.round.playerReady(player));
+    player.socket.on(events.game.positionUpdate, (e: payloads.game.PositionUpdate) =>
+      this.game.round.updatePosition(e),
+    );
     player.socket.on('disconnect', () => {
       player.status = PlayerStatus.absent;
       // TODO: Set global status to pause
+
       if (!this.roomActive) {
         this.game.kill();
         global.rooms.delete(this.id);
       }
     });
-
-    player.socket.on(events.game.start, () => {
-      this.game.start();
-    });
-
-    player.socket.on(events.game.positionUpdate, (e: payloads.game.PositionUpdate) => {
-      this.game.updatePosition(e);
-    });
-  }
-
-  createGame() {
-    this.game = new Game(this);
   }
 
   get roomActive() {
