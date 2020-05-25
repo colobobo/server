@@ -1,4 +1,4 @@
-import { events, MotionType, Routes } from '@colobobo/library';
+import { events, MotionType, RoutesTypes } from '@colobobo/library';
 import { gameProperties } from '@/config/game-properties';
 import { Area, Motion, Room, Round, Router } from '@/classes';
 import { emitGlobal } from '@/utils';
@@ -21,7 +21,7 @@ export class Game {
     emitGlobal({ roomId: this.room.id, eventName: events.game.startSuccess });
     // TODO: Add global.io.in(this.room.id).emit('game:start:error');
 
-    this.router.push({ type: Routes.motion });
+    this.router.push({ type: RoutesTypes.motion });
     new Motion(this.room.id, MotionType.start);
 
     // this.round.init();
