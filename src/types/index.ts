@@ -1,4 +1,5 @@
 import { Socket } from 'socket.io';
+import { PlayerStatus } from '@colobobo/library';
 import { Game } from '@/classes';
 
 export interface RoomInterface {
@@ -8,10 +9,6 @@ export interface RoomInterface {
   addPlayer: (player: PlayerInterface) => void;
 }
 
-export enum PlayerStatus {
-  active = 'active',
-  absent = 'absent',
-}
 export interface PlayerInterface {
   id: string;
   socket: Socket;
