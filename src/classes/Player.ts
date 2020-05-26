@@ -4,6 +4,7 @@ import { PlayerInterface } from '@/types';
 
 export class Player implements PlayerInterface {
   id: string;
+  isCreator = false;
   socket: Socket;
   status: PlayerStatus;
 
