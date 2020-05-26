@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 import { PlayerStatus } from '@colobobo/library';
-import { Game } from '@/classes';
+import { Game, Player } from '@/classes';
 
 export interface RoomInterface {
   id: string;
@@ -11,6 +11,15 @@ export interface RoomInterface {
 
 export interface PlayerInterface {
   id: string;
+  isCreator: boolean;
   socket: Socket;
   status: PlayerStatus;
+}
+
+export interface Scene {
+  init: () => void;
+  playerReady: (player: Player) => void;
+  start: () => void;
+  end: () => void;
+  clear: () => void;
 }

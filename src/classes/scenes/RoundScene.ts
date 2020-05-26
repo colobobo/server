@@ -1,9 +1,10 @@
 import { events, GameObjects, payloads, PlayerStatus } from '@colobobo/library';
+import { Scene } from '@/types';
 import { gameProperties } from '@/config/game-properties';
 import { Game, History, Player, Room } from '@/classes';
 import { emitGlobal } from '@/utils';
 
-export class Round {
+export class RoundScene implements Scene {
   history: History;
   id: number;
   interval: any;
@@ -107,23 +108,24 @@ export class Round {
   }
 
   success() {
-    // TODO: Go to motion view
-    // TODO: Push to history
+    this.game.score++;
+    this.end();
   }
 
   fail() {
-    if (this.game.life === 0) {
-      this.kill();
-      this.game.end();
-    } else {
-      this.game.removeLife();
-    }
-
-    // TODO: Push to history
-    // TODO: Go to motion view
+    if (this.game.life > 0) this.game.removeLife();
+    this.end();
   }
 
-  kill() {
+  end() {
+    this.incrementDifficulty();
+    this.clear();
+    this.game.switchToScene('transition');
+    this.game.transitionScene.init();
+    // TODO: Emit event
+  }
+
+  clear() {
     clearInterval(this.interval);
   }
 }

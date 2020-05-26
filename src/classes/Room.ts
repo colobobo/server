@@ -15,11 +15,18 @@ export class Room implements RoomInterface {
 
   addPlayer(player: PlayerInterface) {
     this.players.set(player.id, player);
+    if (player.isCreator) this.initCreatorEventListeners(player);
+    this.initEventListeners(player);
+  }
 
+  initCreatorEventListeners(player: PlayerInterface) {
     player.socket.on(events.game.start, () => this.game.start());
-    player.socket.on(events.player.ready, () => this.game.round.playerReady(player));
+  }
+
+  initEventListeners(player: PlayerInterface) {
+    player.socket.on(events.player.ready, () => this.game.roundScene.playerReady(player));
     player.socket.on(events.game.positionUpdate, (e: payloads.game.PositionUpdate) =>
-      this.game.round.updatePosition(e),
+      this.game.roundScene.updatePosition(e),
     );
     player.socket.on('disconnect', () => {
       player.status = PlayerStatus.absent;
