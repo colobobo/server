@@ -5,13 +5,15 @@ import { emitGlobal } from '@/utils';
 export class Area {
   room: Room;
   width: Device['width'];
-  height: Device['height'];
+  minHeight: Device['height'];
+  maxHeight: Device['height'];
   devices: Map<string, AreaDevice>;
 
   constructor(room: Room) {
     this.room = room;
     this.width = 0;
-    this.height = 0;
+    this.minHeight = 0;
+    this.maxHeight = 0;
     this.devices = new Map();
   }
 
@@ -24,8 +26,12 @@ export class Area {
 
     this.width += device.width;
 
-    if (this.height === 0 || device.height < this.height) {
-      this.height = device.height;
+    if (this.minHeight === 0 || device.height < this.minHeight) {
+      this.minHeight = device.height;
+    }
+
+    if (this.maxHeight === 0 || device.height > this.maxHeight) {
+      this.maxHeight = device.height;
     }
 
     this.emitAreaUpdate();
@@ -42,7 +48,8 @@ export class Area {
       eventName: events.area.update,
       data: {
         width: this.width,
-        height: this.height,
+        minHeight: this.minHeight,
+        maxHeight: this.maxHeight,
         devices: Array.from(this.devices).reduce(
           (obj, [key, value]) => Object.assign(obj, { [key]: value }), // Be careful! Maps can have non-String keys; object literals can't.
           {},
