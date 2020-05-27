@@ -58,9 +58,9 @@ export class RoundScene implements Scene {
   }
 
   tick() {
-    emitGlobal<payloads.game.Tick>({
+    emitGlobal<payloads.round.Tick>({
       roomId: this.room.id,
-      eventName: events.game.tick,
+      eventName: events.round.tick,
       data: {
         objects: this.objects,
         tick: gameProperties.tick,
