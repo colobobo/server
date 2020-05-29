@@ -1,8 +1,10 @@
 import { Socket } from 'socket.io';
-import { PlayerInterface, PlayerStatus } from '@/types';
+import { PlayerStatus } from '@colobobo/library';
+import { PlayerInterface } from '@/types';
 
 export class Player implements PlayerInterface {
   id: string;
+  isCreator = false;
   socket: Socket;
   status: PlayerStatus;
 

@@ -9,6 +9,7 @@ export const create = function(device: payloads.room.Create) {
   this.join(uid, () => {
     const room = new Room(uid);
     const player = new Player(this);
+    player.isCreator = true;
 
     room.addPlayer(player);
     room.game.area.addDeviceToArea(player.id, device);
