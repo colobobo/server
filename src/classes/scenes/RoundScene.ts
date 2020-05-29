@@ -1,4 +1,4 @@
-import { events, GameObjects, payloads, PlayerStatus } from '@colobobo/library';
+import { events, Members, payloads, PlayerStatus } from '@colobobo/library';
 import { Scene } from '@/types';
 import { gameProperties } from '@/config/game-properties';
 import { Game, History, Player, Room } from '@/classes';
@@ -8,7 +8,7 @@ export class RoundScene implements Scene {
   history: History;
   id: number;
   interval: any;
-  objects: GameObjects;
+  members: Members;
   game: Game;
   room: Room;
   // TODO Add world
@@ -21,27 +21,90 @@ export class RoundScene implements Scene {
   }
 
   init() {
-    this.objects = {
-      'object-1': {
-        x: 0,
-        y: 0,
+    this.members = {
+      'member-1': {
+        position: {
+          x: 0,
+          y: 0,
+        },
+        velocity: {
+          x: 0,
+          y: 0,
+        },
         width: 180,
         height: 180,
         color: '#ffe136',
+        manager: '',
       },
-      'object-2': {
-        x: 0,
-        y: 150,
+      'member-2': {
+        position: {
+          x: 0,
+          y: 150,
+        },
+        velocity: {
+          x: 0,
+          y: 0,
+        },
         width: 130,
         height: 130,
         color: '#ff7ade',
+        manager: '',
       },
-      'object-3': {
-        x: 0,
-        y: 250,
+      'member-3': {
+        position: {
+          x: 0,
+          y: 250,
+        },
+        velocity: {
+          x: 0,
+          y: 0,
+        },
         width: 100,
         height: 100,
         color: '#3ced7e',
+        manager: '',
+      },
+      'member-4': {
+        position: {
+          x: 0,
+          y: 250,
+        },
+        velocity: {
+          x: 0,
+          y: 0,
+        },
+        width: 100,
+        height: 100,
+        color: '#3ced7e',
+        manager: '',
+      },
+      'member-5': {
+        position: {
+          x: 0,
+          y: 250,
+        },
+        velocity: {
+          x: 0,
+          y: 0,
+        },
+        width: 100,
+        height: 100,
+        color: '#3ced7e',
+        manager: '',
+      },
+      'member-6': {
+        position: {
+          x: 0,
+          y: 250,
+        },
+        velocity: {
+          x: 0,
+          y: 0,
+        },
+        width: 100,
+        height: 100,
+        color: '#3ced7e',
+        manager: '',
       },
     };
     // TODO: Emit init state
@@ -58,11 +121,11 @@ export class RoundScene implements Scene {
   }
 
   tick() {
-    emitGlobal<payloads.game.Tick>({
+    emitGlobal<payloads.round.Tick>({
       roomId: this.room.id,
-      eventName: events.game.tick,
+      eventName: events.round.tick,
       data: {
-        objects: this.objects,
+        members: this.members,
         tick: gameProperties.tick,
       },
     });
@@ -72,20 +135,18 @@ export class RoundScene implements Scene {
     // TODO: Add member into `members` object
   }
 
-  memberDragStart() {
+  memberDragStart(e: payloads.round.MemberDragStart) {
     // TODO: Update member status
+    this.members[e.memberId].manager = e.playerId;
   }
 
   memberDragEnd() {
     // TODO: Update member status
   }
 
-  updatePosition({ x, y, id }: { x: number; y: number; id: string }) {
-    this.objects[id].x = x;
-    this.objects[id].y = y;
-  }
-  memberMove() {
-    // TODO: Update position & remove `updatePosition`
+  memberMove(e: payloads.round.MemberMove) {
+    this.members[e.id].position = e.position;
+    this.members[e.id].velocity = e.velocity;
   }
 
   memberTrapped() {

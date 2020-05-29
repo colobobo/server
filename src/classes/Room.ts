@@ -24,10 +24,14 @@ export class Room implements RoomInterface {
   }
 
   initEventListeners(player: PlayerInterface) {
+    // player
     player.socket.on(events.player.ready, () => this.game.roundScene.playerReady(player));
-    player.socket.on(events.game.positionUpdate, (e: payloads.game.PositionUpdate) =>
-      this.game.roundScene.updatePosition(e),
+    // round - members
+    player.socket.on(events.round.memberMove, (e: payloads.round.MemberMove) => this.game.roundScene.memberMove(e));
+    player.socket.on(events.round.memberDragStart, (e: payloads.round.MemberDragStart) =>
+      this.game.roundScene.memberDragStart(e),
     );
+    // disconnect
     player.socket.on('disconnect', () => {
       player.status = PlayerStatus.absent;
       // TODO: Set global status to pause
