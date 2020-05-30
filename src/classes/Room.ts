@@ -1,4 +1,4 @@
-import { events, payloads, PlayerStatus } from '@colobobo/library';
+import { events, payloads, enums } from '@colobobo/library';
 import { PlayerInterface, RoomInterface } from '@/types';
 import { Game } from '@/classes';
 
@@ -20,20 +20,29 @@ export class Room implements RoomInterface {
   }
 
   initCreatorEventListeners(player: PlayerInterface) {
+    // game
     player.socket.on(events.game.start, () => this.game.start());
+
+    // transition
+    player.socket.on(events.transition.ended, () => this.game.transitionScene.end());
   }
 
   initEventListeners(player: PlayerInterface) {
     // player
     player.socket.on(events.player.ready, () => this.game.roundScene.playerReady(player));
-    // round - members
+
+    // transition
+    player.socket.on(events.transition.playerReady, () => this.game.transitionScene.playerReady(player));
+
+    // round
     player.socket.on(events.round.memberMove, (e: payloads.round.MemberMove) => this.game.roundScene.memberMove(e));
     player.socket.on(events.round.memberDragStart, (e: payloads.round.MemberDragStart) =>
       this.game.roundScene.memberDragStart(e),
     );
+
     // disconnect
     player.socket.on('disconnect', () => {
-      player.status = PlayerStatus.absent;
+      player.status = enums.player.Status.absent;
       // TODO: Set global status to pause
 
       if (!this.roomActive) {

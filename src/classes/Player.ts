@@ -1,16 +1,17 @@
 import { Socket } from 'socket.io';
-import { PlayerStatus } from '@colobobo/library';
+import { enums } from '@colobobo/library';
 import { PlayerInterface } from '@/types';
 
 export class Player implements PlayerInterface {
   id: string;
   isCreator = false;
+  isReady = false;
   socket: Socket;
-  status: PlayerStatus;
+  status: enums.player.Status;
 
   constructor(socket: Socket) {
     this.id = socket.id;
     this.socket = socket;
-    this.status = PlayerStatus.active;
+    this.status = enums.player.Status.active;
   }
 }
