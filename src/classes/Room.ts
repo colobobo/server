@@ -1,4 +1,4 @@
-import { events, payloads, PlayerStatus } from '@colobobo/library';
+import { events, payloads, enums } from '@colobobo/library';
 import { PlayerInterface, RoomInterface } from '@/types';
 import { Game } from '@/classes';
 
@@ -21,19 +21,39 @@ export class Room implements RoomInterface {
 
   initCreatorEventListeners(player: PlayerInterface) {
     player.socket.on(events.game.start, () => this.game.start());
+    player.socket.on(events.transition.ended, () => this.game.transitionScene.end());
   }
 
   initEventListeners(player: PlayerInterface) {
-    // player
     player.socket.on(events.player.ready, () => this.game.roundScene.playerReady(player));
-    // round - members
-    player.socket.on(events.round.memberMove, (e: payloads.round.MemberMove) => this.game.roundScene.memberMove(e));
-    player.socket.on(events.round.memberDragStart, (e: payloads.round.MemberDragStart) =>
-      this.game.roundScene.memberDragStart(e),
+
+    player.socket.on(events.transition.playerReady, () => this.game.transitionScene.playerReady(player));
+    player.socket.on(events.round.playerReady, () => this.game.roundScene.playerReady(player));
+
+    player.socket.on(events.round.memberSpawned, (payload: payloads.round.MemberSpawned) =>
+      this.game.roundScene.memberSpawned(payload),
     );
-    // disconnect
+    player.socket.on(events.round.memberDragStart, (payload: payloads.round.MemberDragStart) =>
+      this.game.roundScene.memberDragStart(payload),
+    );
+    player.socket.on(events.round.memberDragEnd, (payload: payloads.round.MemberDragEnd) =>
+      this.game.roundScene.memberDragEnd(payload),
+    );
+    player.socket.on(events.round.memberMove, (payload: payloads.round.MemberMove) =>
+      this.game.roundScene.memberMove(payload),
+    );
+    player.socket.on(events.round.memberTrapped, (payload: payloads.round.MemberTrapped) =>
+      this.game.roundScene.memberTrapped(payload),
+    );
+    player.socket.on(events.round.memberDropped, (payload: payloads.round.MemberDropped) =>
+      this.game.roundScene.memberDropped(payload),
+    );
+    player.socket.on(events.round.memberArrived, (payload: payloads.round.MemberArrived) =>
+      this.game.roundScene.memberArrived(payload),
+    );
+
     player.socket.on('disconnect', () => {
-      player.status = PlayerStatus.absent;
+      player.status = enums.player.Status.absent;
       // TODO: Set global status to pause
 
       if (!this.roomActive) {

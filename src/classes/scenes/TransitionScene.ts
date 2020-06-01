@@ -1,32 +1,40 @@
-import { PlayerStatus } from '@colobobo/library';
+import { events, payloads, enums } from '@colobobo/library';
 import { Scene } from '@/types';
-import { Game, Player } from '@/classes';
+import { Game, Player, Room } from '@/classes';
+import { emitGlobal } from '@/utils';
 
 export class TransitionScene implements Scene {
   game: Game;
+  room: Room;
 
-  constructor(game: Game) {
+  constructor(room: Room, game: Game) {
     this.game = game;
+    this.room = room;
   }
 
   init() {
-    console.log('INIT');
-    // TODO: Emit event with params
+    console.log(events.transition.init);
+    emitGlobal<payloads.transition.Init>({ roomId: this.room.id, eventName: events.transition.init });
   }
 
   playerReady(player: Player) {
-    player.status = PlayerStatus.ready;
-    // TODO: If all ready => start round
+    console.log(events.transition.playerReady, player.id);
+    emitGlobal<payloads.transition.PlayerReady>({ roomId: this.room.id, eventName: events.transition.playerReady });
+    player.isReady = true;
+    // TODO: If all ready => start transition
+    this.start();
   }
 
   start() {
-    console.log('START');
-    // TODO: When all players are ok => emit event
+    console.log(events.transition.start);
+    emitGlobal<payloads.transition.Start>({ roomId: this.room.id, eventName: events.transition.start });
   }
 
   end() {
+    console.log(events.transition.ended);
+
     if (this.game.life > 0) {
-      this.game.switchToScene('round');
+      this.game.switchToScene(enums.scene.Type.round);
       this.game.roundScene.init();
     } else {
       this.game.end();
