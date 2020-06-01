@@ -1,4 +1,4 @@
-import { events, Members, payloads, PlayerStatus } from '@colobobo/library';
+import { events, Members, payloads, enums } from '@colobobo/library';
 import { Scene } from '@/types';
 import { gameProperties } from '@/config/game-properties';
 import { Game, History, Player, Room } from '@/classes';
@@ -11,7 +11,7 @@ export class RoundScene implements Scene {
   members: Members;
   game: Game;
   room: Room;
-  // TODO Add world
+  world: enums.World = enums.World.jungle;
 
   constructor(room: Room, game: Game) {
     this.id = 1;
@@ -23,101 +23,99 @@ export class RoundScene implements Scene {
   init() {
     this.members = {
       'member-1': {
-        position: {
-          x: 0,
-          y: 0,
-        },
-        velocity: {
-          x: 0,
-          y: 0,
-        },
+        position: { x: 0, y: 0 },
+        velocity: { x: 0, y: 0 },
         width: 180,
         height: 180,
         color: '#ffe136',
         manager: '',
       },
       'member-2': {
-        position: {
-          x: 0,
-          y: 150,
-        },
-        velocity: {
-          x: 0,
-          y: 0,
-        },
+        position: { x: 0, y: 150 },
+        velocity: { x: 0, y: 0 },
         width: 130,
         height: 130,
         color: '#ff7ade',
         manager: '',
       },
       'member-3': {
-        position: {
-          x: 0,
-          y: 250,
-        },
-        velocity: {
-          x: 0,
-          y: 0,
-        },
+        position: { x: 0, y: 250 },
+        velocity: { x: 0, y: 0 },
         width: 100,
         height: 100,
         color: '#3ced7e',
         manager: '',
       },
       'member-4': {
-        position: {
-          x: 0,
-          y: 250,
-        },
-        velocity: {
-          x: 0,
-          y: 0,
-        },
+        position: { x: 0, y: 250 },
+        velocity: { x: 0, y: 0 },
         width: 100,
         height: 100,
         color: '#3ced7e',
         manager: '',
       },
       'member-5': {
-        position: {
-          x: 0,
-          y: 250,
-        },
-        velocity: {
-          x: 0,
-          y: 0,
-        },
+        position: { x: 0, y: 250 },
+        velocity: { x: 0, y: 0 },
         width: 100,
         height: 100,
         color: '#3ced7e',
         manager: '',
       },
       'member-6': {
-        position: {
-          x: 0,
-          y: 250,
-        },
-        velocity: {
-          x: 0,
-          y: 0,
-        },
+        position: { x: 0, y: 250 },
+        velocity: { x: 0, y: 0 },
         width: 100,
         height: 100,
         color: '#3ced7e',
         manager: '',
       },
     };
-    // TODO: Emit init state
+    emitGlobal<payloads.round.Init>({
+      roomId: this.room.id,
+      eventName: events.round.init,
+      data: {
+        id: this.id,
+        world: this.world,
+        duration: 30,
+        playerRoles: {}, // TODO: Add loop to define roles
+      },
+    });
   }
 
   playerReady(player: Player) {
-    player.status = PlayerStatus.ready;
+    player.isReady = true;
     // TODO: If all ready => start round
+    this.start();
   }
 
   start() {
     this.interval = setInterval(this.tick.bind(this), gameProperties.tick);
-    emitGlobal({ roomId: this.room.id, eventName: events.round.start });
+    emitGlobal<payloads.round.Start>({ roomId: this.room.id, eventName: events.round.start });
+  }
+
+  fail() {
+    if (this.game.life > 0) this.game.removeLife();
+    this.end();
+    emitGlobal<payloads.round.Fail>({ roomId: this.room.id, eventName: events.round.fail, data: {} });
+  }
+
+  success() {
+    this.game.score++;
+    this.end();
+    emitGlobal<payloads.round.Success>({ roomId: this.room.id, eventName: events.round.success, data: {} });
+  }
+
+  end() {
+    this.incrementDifficulty();
+    this.clear();
+    this.game.switchToScene(enums.scene.Type.transition);
+    this.game.transitionScene.init();
+    // TODO: Emit event
+  }
+
+  clear() {
+    clearInterval(this.interval);
   }
 
   tick() {
@@ -126,39 +124,45 @@ export class RoundScene implements Scene {
       eventName: events.round.tick,
       data: {
         members: this.members,
-        tick: gameProperties.tick,
       },
     });
   }
 
-  memberSpawned() {
+  memberSpawned(payload: payloads.round.MemberSpawned) {
+    console.log(events.round.memberSpawned, payload);
     // TODO: Add member into `members` object
   }
 
-  memberDragStart(e: payloads.round.MemberDragStart) {
+  memberDragStart(payload: payloads.round.MemberDragStart) {
+    console.log(events.round.memberDragStart, payload);
     // TODO: Update member status
-    this.members[e.memberId].manager = e.playerId;
+    this.members[payload.memberId].manager = payload.playerId;
   }
 
-  memberDragEnd() {
-    // TODO: Update member status
-  }
-
-  memberMove(e: payloads.round.MemberMove) {
-    this.members[e.id].position = e.position;
-    this.members[e.id].velocity = e.velocity;
-  }
-
-  memberTrapped() {
+  memberDragEnd(payload: payloads.round.MemberDragEnd) {
+    console.log(events.round.memberDragEnd, payload);
     // TODO: Update member status
   }
 
-  memberDropped() {
+  memberMove(payload: payloads.round.MemberMove) {
+    console.log(events.round.memberMove, payload);
+    this.members[payload.id].position = payload.position;
+    this.members[payload.id].velocity = payload.velocity;
+  }
+
+  memberTrapped(payload: payloads.round.MemberTrapped) {
+    console.log(events.round.memberTrapped, payload);
+    // TODO: Update member status
+  }
+
+  memberDropped(payload: payloads.round.MemberDropped) {
+    console.log(events.round.memberDropped, payload);
     // TODO: Update member status
     // TODO: this.fail()
   }
 
-  memberArrived() {
+  memberArrived(payload: payloads.round.MemberArrived) {
+    console.log(events.round.memberArrived, payload);
     // TODO: Update member status
     // TODO: If last to arrive => this.success()
   }
@@ -166,27 +170,5 @@ export class RoundScene implements Scene {
   incrementDifficulty() {
     this.id = this.id + 1;
     // TODO: Increment difficulty
-  }
-
-  success() {
-    this.game.score++;
-    this.end();
-  }
-
-  fail() {
-    if (this.game.life > 0) this.game.removeLife();
-    this.end();
-  }
-
-  end() {
-    this.incrementDifficulty();
-    this.clear();
-    this.game.switchToScene('transition');
-    this.game.transitionScene.init();
-    // TODO: Emit event
-  }
-
-  clear() {
-    clearInterval(this.interval);
   }
 }
