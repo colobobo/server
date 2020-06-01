@@ -6,7 +6,7 @@ import { emitGlobal } from '@/utils';
 export class Game {
   area: Area;
   room: Room;
-  sceneType: any; // TODO: type
+  sceneType: enums.scene.Type;
   roundScene: RoundScene;
   transitionScene: TransitionScene;
   score = 0;
@@ -24,6 +24,7 @@ export class Game {
     emitGlobal<payloads.game.StartSuccess>({ roomId: this.room.id, eventName: events.game.startSuccess });
     // TODO: Add global.io.in(this.room.id).emit('game:start:error');
 
+    this.switchToScene(enums.scene.Type.transition);
     this.transitionScene.init();
 
     // Uncomment for working app

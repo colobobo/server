@@ -78,6 +78,7 @@ export class RoundScene implements Scene {
         id: this.id,
         world: this.world,
         duration: 30,
+        tick: gameProperties.tick,
         playerRoles: {}, // TODO: Add loop to define roles
       },
     });
@@ -145,7 +146,7 @@ export class RoundScene implements Scene {
   }
 
   memberMove(payload: payloads.round.MemberMove) {
-    console.log(events.round.memberMove, payload);
+    console.log(events.round.memberMove, payload.id);
     this.members[payload.id].position = payload.position;
     this.members[payload.id].velocity = payload.velocity;
   }
@@ -165,6 +166,7 @@ export class RoundScene implements Scene {
     console.log(events.round.memberArrived, payload);
     // TODO: Update member status
     // TODO: If last to arrive => this.success()
+    this.success();
   }
 
   incrementDifficulty() {
