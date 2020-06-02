@@ -23,11 +23,15 @@ export class RoundScene implements Scene {
     this.id++;
 
     const availablePlayerRoles = this.availablePlayerRoles;
-    const duration = this.isFirstRound ? this.duration : this.duration * gameProperties.duration.decreaseCoefficient;
+    const duration = this.isFirstRound
+      ? this.duration
+      : Math.round(this.duration * gameProperties.duration.decreaseCoefficient);
     const playerRoles: PlayerRoles = {};
     const playerIds = Array.from(this.room.players.keys());
     const skins = shuffle(Object.values(enums.member.Skins));
     const world: enums.World = getRandomArrayElement(Object.values(enums.World));
+
+    this.duration = duration;
 
     for (let i = 0; i < gameProperties.members; i++) {
       this.members[`member-${i + 1}`] = {
@@ -68,6 +72,8 @@ export class RoundScene implements Scene {
   start() {
     this.interval = setInterval(this.tick.bind(this), gameProperties.tick);
     emitGlobal<payloads.round.Start>({ roomId: this.room.id, eventName: events.round.start });
+
+    // TODO: Start timer based on this.duration value to trigger this.fail()
   }
 
   fail() {
@@ -148,6 +154,7 @@ export class RoundScene implements Scene {
     return this.id === 1;
   }
 
+  // TODO: Type return
   get availablePlayerRoles() {
     const array = [
       {
