@@ -19,7 +19,6 @@ export const create = function(device: payloads.room.Create) {
       events.room.createSuccess,
       emitCallback<payloads.room.CreateSuccess>({ id: uid, deviceId: player.id }),
     );
-    log(`Created room ${uid}`);
   });
 };
 
@@ -38,7 +37,6 @@ export const join = function(args: payloads.room.Join) {
           events.room.joinSuccess,
           emitCallback<payloads.room.JoinSuccess>({ id, deviceId: player.id }),
         );
-        log(`Joined room ${id}`);
       });
     } else {
       this.emit(events.room.joinError, emitErrorCallback<payloads.room.JoinError>(2, 'Room is full'));
