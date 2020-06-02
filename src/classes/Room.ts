@@ -6,6 +6,7 @@ export class Room implements RoomInterface {
   id: string;
   players: Map<string, PlayerInterface>;
   game: Game;
+  isAdmin: boolean;
 
   constructor(id: string) {
     this.id = id;
