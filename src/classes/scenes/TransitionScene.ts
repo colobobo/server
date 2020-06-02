@@ -44,6 +44,6 @@ export class TransitionScene implements Scene {
   }
 
   clear() {
-    console.log('CLEAR');
+    console.log('CLEAR TRANSITION SCENE');
   }
 }
