@@ -1,4 +1,4 @@
-import { events, Members, payloads, enums, PlayerRoles } from '@colobobo/library';
+import { events, Members, payloads, enums, PlayerRoles, PlayerRole } from '@colobobo/library';
 import { Scene } from '@/types';
 import { gameProperties } from '@/config/game-properties';
 import { Game, History, Player, Room } from '@/classes';
@@ -10,7 +10,10 @@ export class RoundScene implements Scene {
   game: Game;
   id = 0;
   interval: NodeJS.Timeout;
+
   duration = gameProperties.duration.defaultValue;
+  trapInterval = gameProperties.traps.defaultInterval;
+  world: enums.World;
   members: Members = {};
 
   constructor(room: Room, game: Game) {
@@ -22,7 +25,6 @@ export class RoundScene implements Scene {
   init() {
     this.id++;
 
-    const availablePlayerRoles = this.availablePlayerRoles;
     const duration = this.isFirstRound
       ? this.duration
       : Math.round(this.duration * gameProperties.duration.decreaseCoefficient);
@@ -32,6 +34,7 @@ export class RoundScene implements Scene {
     const world: enums.World = getRandomArrayElement(Object.values(enums.World));
 
     this.duration = duration;
+    this.world = world;
 
     for (let i = 0; i < gameProperties.members; i++) {
       this.members[`member-${i + 1}`] = {
@@ -44,6 +47,7 @@ export class RoundScene implements Scene {
       };
     }
 
+    const availablePlayerRoles = this.availablePlayerRoles;
     for (let i = 0; i < playerIds.length; i++) {
       playerRoles[playerIds[i]] = availablePlayerRoles[i];
     }
@@ -154,8 +158,10 @@ export class RoundScene implements Scene {
     return this.id === 1;
   }
 
-  // TODO: Type return
-  get availablePlayerRoles() {
+  get availablePlayerRoles(): PlayerRole[] {
+    const trapInterval = this.isFirstRound
+      ? this.trapInterval
+      : Math.round(this.trapInterval * gameProperties.traps.decreaseCoefficient);
     const array = [
       {
         role: enums.player.Role.platform,
@@ -163,9 +169,9 @@ export class RoundScene implements Scene {
       },
       {
         role: enums.player.Role.trap,
-        properties: { type: '', interval: 3000 }, // TODO: Define trap type
+        properties: { type: getRandomArrayElement(Object.values(enums.Traps[this.world])), interval: trapInterval },
       },
-      // TODO: Add more traps depending difficulty
+      // TODO: Add more traps depending difficulty & player length
     ];
     const offset = array.length;
 
@@ -175,6 +181,10 @@ export class RoundScene implements Scene {
         properties: null,
       });
 
+    this.trapInterval = trapInterval;
+
+    const result = shuffle(array);
+    console.log(result);
     return shuffle(array);
   }
 }

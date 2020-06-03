@@ -1,9 +1,5 @@
-import { enums } from '@colobobo/library';
-
 export const gameProperties = {
-  difficulty: {
-    step: Object.keys(enums.World).length,
-  },
+  difficultyStep: 3,
   duration: {
     defaultValue: 30000,
     decreaseCoefficient: 0.95,
@@ -15,4 +11,8 @@ export const gameProperties = {
     max: 6,
   },
   tick: (1000 / 60) * 2,
+  traps: {
+    defaultInterval: 5000,
+    decreaseCoefficient: 0.98,
+  },
 };
