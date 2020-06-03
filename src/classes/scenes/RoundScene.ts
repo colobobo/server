@@ -11,8 +11,8 @@ export class RoundScene implements Scene {
   id = 0;
   interval: NodeJS.Timeout;
 
-  duration = gameProperties.duration.defaultValue;
-  trapInterval = gameProperties.traps.defaultInterval;
+  duration = gameProperties.variables.duration.defaultValue;
+  trapInterval = gameProperties.variables.traps.defaultInterval;
   world: enums.World;
   members: Members = {};
 
@@ -27,7 +27,7 @@ export class RoundScene implements Scene {
 
     const duration = this.isFirstRound
       ? this.duration
-      : Math.round(this.duration * gameProperties.duration.decreaseCoefficient);
+      : Math.round(this.duration * gameProperties.variables.duration.decreaseCoefficient);
     const playerRoles: PlayerRoles = {};
     const playerIds = Array.from(this.room.players.keys());
     const skins = shuffle(Object.values(enums.member.Skins));
@@ -161,7 +161,7 @@ export class RoundScene implements Scene {
   get availablePlayerRoles(): PlayerRole[] {
     const trapInterval = this.isFirstRound
       ? this.trapInterval
-      : Math.round(this.trapInterval * gameProperties.traps.decreaseCoefficient);
+      : Math.round(this.trapInterval * gameProperties.variables.traps.decreaseCoefficient);
     const array = [
       {
         role: enums.player.Role.platform,
@@ -171,20 +171,31 @@ export class RoundScene implements Scene {
         role: enums.player.Role.trap,
         properties: { type: getRandomArrayElement(Object.values(enums.Traps[this.world])), interval: trapInterval },
       },
-      // TODO: Add more traps depending difficulty & player length
     ];
-    const offset = array.length;
+    const trapsToAdd =
+      Math.floor(this.id / gameProperties.difficultyStep) > this.room.players.size - array.length
+        ? this.room.players.size - array.length
+        : Math.floor(this.id / gameProperties.difficultyStep);
+    const offset = array.length + trapsToAdd;
 
-    for (let i = 0; i < this.room.players.size - offset; i++)
+    // Add traps
+    for (let i = 0; i < trapsToAdd; i++) {
+      array.push({
+        role: enums.player.Role.trap,
+        properties: { type: getRandomArrayElement(Object.values(enums.Traps[this.world])), interval: trapInterval },
+      });
+    }
+
+    // Add blank to available space
+    for (let i = 0; i < this.room.players.size - offset; i++) {
       array.push({
         role: enums.player.Role.blank,
         properties: null,
       });
+    }
 
     this.trapInterval = trapInterval;
 
-    const result = shuffle(array);
-    console.log(result);
     return shuffle(array);
   }
 }
