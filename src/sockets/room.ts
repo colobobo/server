@@ -27,7 +27,6 @@ export const create = function(event: payloads.room.Create) {
         deviceId: player ? player.id : null,
       }),
     );
-    log(`Created room ${uid}`);
   });
 };
 

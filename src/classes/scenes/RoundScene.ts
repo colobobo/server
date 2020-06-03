@@ -1,85 +1,69 @@
-import { events, Members, payloads, enums } from '@colobobo/library';
+import { events, Members, payloads, enums, PlayerRoles, PlayerRole } from '@colobobo/library';
 import { Scene } from '@/types';
 import { gameProperties } from '@/config/game-properties';
 import { Game, History, Player, Room } from '@/classes';
-import { emitGlobal } from '@/utils';
+import { emitGlobal, getRandomArrayElement, shuffle } from '@/utils';
 
 export class RoundScene implements Scene {
   history: History;
-  id: number;
-  interval: any;
-  members: Members;
-  game: Game;
   room: Room;
-  world: enums.World = enums.World.jungle;
+  game: Game;
+  id = 0;
+  interval: NodeJS.Timeout;
+
+  duration = gameProperties.variables.duration.defaultValue;
+  trapInterval = gameProperties.variables.traps.defaultInterval;
+  world: enums.World;
+  members: Members = {};
 
   constructor(room: Room, game: Game) {
-    this.id = 1;
     this.game = game;
-    this.history = new History();
     this.room = room;
+    this.history = new History();
   }
 
   init() {
-    this.members = {
-      'member-1': {
+    this.id++;
+
+    const duration = this.firstRoundCheck(
+      this.duration,
+      Math.round(this.duration * gameProperties.variables.duration.decreaseCoefficient),
+    );
+    const playerRoles: PlayerRoles = {};
+    const playerIds = Array.from(this.room.players.keys());
+    const skins = shuffle(Object.values(enums.member.Skins));
+    const world: enums.World = getRandomArrayElement(Object.values(enums.World));
+
+    this.duration = duration;
+    this.world = world;
+
+    for (let i = 0; i < gameProperties.members; i++) {
+      this.members[`member-${i + 1}`] = {
+        isDrag: false,
+        skin: skins[i],
+        status: enums.member.Status.waiting,
+        manager: null,
         position: { x: 0, y: 0 },
         velocity: { x: 0, y: 0 },
-        width: 180,
-        height: 180,
-        color: '#ffe136',
-        manager: '',
-      },
-      'member-2': {
-        position: { x: 0, y: 150 },
-        velocity: { x: 0, y: 0 },
-        width: 130,
-        height: 130,
-        color: '#ff7ade',
-        manager: '',
-      },
-      'member-3': {
-        position: { x: 0, y: 250 },
-        velocity: { x: 0, y: 0 },
-        width: 100,
-        height: 100,
-        color: '#3ced7e',
-        manager: '',
-      },
-      'member-4': {
-        position: { x: 0, y: 250 },
-        velocity: { x: 0, y: 0 },
-        width: 100,
-        height: 100,
-        color: '#3ced7e',
-        manager: '',
-      },
-      'member-5': {
-        position: { x: 0, y: 250 },
-        velocity: { x: 0, y: 0 },
-        width: 100,
-        height: 100,
-        color: '#3ced7e',
-        manager: '',
-      },
-      'member-6': {
-        position: { x: 0, y: 250 },
-        velocity: { x: 0, y: 0 },
-        width: 100,
-        height: 100,
-        color: '#3ced7e',
-        manager: '',
-      },
-    };
+      };
+    }
+
+    const availablePlayerRoles = this.availablePlayerRoles;
+    for (let i = 0; i < playerIds.length; i++) {
+      playerRoles[playerIds[i]] = availablePlayerRoles[i];
+    }
+
+    console.log(events.round.init);
     emitGlobal<payloads.round.Init>({
       roomId: this.room.id,
       eventName: events.round.init,
       data: {
         id: this.id,
-        world: this.world,
-        duration: 30,
         tick: gameProperties.tick,
-        playerRoles: {}, // TODO: Add loop to define roles
+        members: this.members,
+        playerRoles,
+        duration,
+        world,
       },
     });
   }
@@ -93,6 +77,8 @@ export class RoundScene implements Scene {
   start() {
     this.interval = setInterval(this.tick.bind(this), gameProperties.tick);
     emitGlobal<payloads.round.Start>({ roomId: this.room.id, eventName: events.round.start });
+
+    // TODO: Start timer based on this.duration value to trigger this.fail()
   }
 
   fail() {
@@ -108,14 +94,15 @@ export class RoundScene implements Scene {
   }
 
   end() {
-    this.incrementDifficulty();
     this.clear();
     this.game.switchToScene(enums.scene.Type.transition);
     this.game.transitionScene.init();
+    // TODO: Add to history
     // TODO: Emit event
   }
 
   clear() {
+    console.log('CLEAR ROUND SCENE');
     clearInterval(this.interval);
   }
 
@@ -146,7 +133,6 @@ export class RoundScene implements Scene {
   }
 
   memberMove(payload: payloads.round.MemberMove) {
-    console.log(events.round.memberMove, payload.id);
     this.members[payload.id].position = payload.position;
     this.members[payload.id].velocity = payload.velocity;
   }
@@ -169,8 +155,48 @@ export class RoundScene implements Scene {
     this.success();
   }
 
-  incrementDifficulty() {
-    this.id = this.id + 1;
-    // TODO: Increment difficulty
+  firstRoundCheck(defaultValue: any, updatedValue: any) {
+    return this.id === 1 ? defaultValue : updatedValue;
+  }
+
+  get availablePlayerRoles(): PlayerRole[] {
+    const trapInterval = this.firstRoundCheck(
+      this.trapInterval,
+      Math.round(this.trapInterval * gameProperties.variables.traps.decreaseCoefficient),
+    );
+    const playerRoles = [
+      {
+        role: enums.player.Role.platform,
+        properties: { direction: getRandomArrayElement(Object.values(enums.round.Direction)) },
+      },
+      {
+        role: enums.player.Role.trap,
+        properties: { type: getRandomArrayElement(Object.values(enums.Traps[this.world])), interval: trapInterval },
+      },
+    ];
+
+    const maxTrapsToAdd = this.room.players.size - playerRoles.length;
+    const difficultySteps = Math.floor(this.id / gameProperties.difficultyStep);
+    const trapsToAdd = difficultySteps > maxTrapsToAdd ? maxTrapsToAdd : difficultySteps;
+    const offset = playerRoles.length + trapsToAdd;
+    const blanksToAdd = this.room.players.size - offset;
+
+    this.trapInterval = trapInterval;
+
+    for (let i = 0; i < trapsToAdd; i++) {
+      playerRoles.push({
+        role: enums.player.Role.trap,
+        properties: { type: getRandomArrayElement(Object.values(enums.Traps[this.world])), interval: trapInterval },
+      });
+    }
+
+    for (let i = 0; i < blanksToAdd; i++) {
+      playerRoles.push({
+        role: enums.player.Role.blank,
+        properties: null,
+      });
+    }
+
+    return shuffle(playerRoles);
   }
 }
