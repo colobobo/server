@@ -7,6 +7,7 @@ export interface RoomInterface {
   players: Map<string, PlayerInterface>;
   game: Game;
   addPlayer: (player: PlayerInterface) => void;
+  isAdmin: boolean;
 }
 
 export interface PlayerInterface {
