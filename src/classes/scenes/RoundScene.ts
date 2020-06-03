@@ -25,9 +25,10 @@ export class RoundScene implements Scene {
   init() {
     this.id++;
 
-    const duration = this.isFirstRound
-      ? this.duration
-      : Math.round(this.duration * gameProperties.variables.duration.decreaseCoefficient);
+    const duration = this.firstRoundCheck(
+      this.duration,
+      Math.round(this.duration * gameProperties.variables.duration.decreaseCoefficient),
+    );
     const playerRoles: PlayerRoles = {};
     const playerIds = Array.from(this.room.players.keys());
     const skins = shuffle(Object.values(enums.member.Skins));
@@ -154,15 +155,16 @@ export class RoundScene implements Scene {
     this.success();
   }
 
-  get isFirstRound(): boolean {
-    return this.id === 1;
+  firstRoundCheck(defaultValue: any, updatedValue: any) {
+    return this.id === 1 ? defaultValue : updatedValue;
   }
 
   get availablePlayerRoles(): PlayerRole[] {
-    const trapInterval = this.isFirstRound
-      ? this.trapInterval
-      : Math.round(this.trapInterval * gameProperties.variables.traps.decreaseCoefficient);
-    const array = [
+    const trapInterval = this.firstRoundCheck(
+      this.trapInterval,
+      Math.round(this.trapInterval * gameProperties.variables.traps.decreaseCoefficient),
+    );
+    const playerRoles = [
       {
         role: enums.player.Role.platform,
         properties: { direction: getRandomArrayElement(Object.values(enums.round.Direction)) },
@@ -172,30 +174,29 @@ export class RoundScene implements Scene {
         properties: { type: getRandomArrayElement(Object.values(enums.Traps[this.world])), interval: trapInterval },
       },
     ];
-    const trapsToAdd =
-      Math.floor(this.id / gameProperties.difficultyStep) > this.room.players.size - array.length
-        ? this.room.players.size - array.length
-        : Math.floor(this.id / gameProperties.difficultyStep);
-    const offset = array.length + trapsToAdd;
 
-    // Add traps
+    const maxTrapsToAdd = this.room.players.size - playerRoles.length;
+    const difficultySteps = Math.floor(this.id / gameProperties.difficultyStep);
+    const trapsToAdd = difficultySteps > maxTrapsToAdd ? maxTrapsToAdd : difficultySteps;
+    const offset = playerRoles.length + trapsToAdd;
+    const blanksToAdd = this.room.players.size - offset;
+
+    this.trapInterval = trapInterval;
+
     for (let i = 0; i < trapsToAdd; i++) {
-      array.push({
+      playerRoles.push({
         role: enums.player.Role.trap,
         properties: { type: getRandomArrayElement(Object.values(enums.Traps[this.world])), interval: trapInterval },
       });
     }
 
-    // Add blank to available space
-    for (let i = 0; i < this.room.players.size - offset; i++) {
-      array.push({
+    for (let i = 0; i < blanksToAdd; i++) {
+      playerRoles.push({
         role: enums.player.Role.blank,
         properties: null,
       });
     }
 
-    this.trapInterval = trapInterval;
-
-    return shuffle(array);
+    return shuffle(playerRoles);
   }
 }
