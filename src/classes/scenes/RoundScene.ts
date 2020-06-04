@@ -70,8 +70,7 @@ export class RoundScene implements Scene {
 
   playerReady(player: Player) {
     player.isReady = true;
-    // TODO: If all ready => start round
-    this.start();
+    if (Array.from(this.room.players.values()).every(player => player.isReady)) this.start();
   }
 
   start() {
