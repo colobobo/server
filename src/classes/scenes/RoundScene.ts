@@ -117,7 +117,8 @@ export class RoundScene implements Scene {
 
   memberSpawned(payload: payloads.round.MemberSpawned) {
     console.log(events.round.memberSpawned, payload);
-    // TODO: Add member into `members` object
+    const { memberId } = payload;
+    this.members[memberId].status = enums.member.Status.active;
   }
 
   memberDragStart(payload: payloads.round.MemberDragStart) {
@@ -139,6 +140,8 @@ export class RoundScene implements Scene {
   memberTrapped(payload: payloads.round.MemberTrapped) {
     console.log(events.round.memberTrapped, payload);
     // TODO: Update member status
+    const { memberId } = payload;
+    this.members[memberId].status = enums.member.Status.waiting;
   }
 
   memberDropped(payload: payloads.round.MemberDropped) {
@@ -149,9 +152,13 @@ export class RoundScene implements Scene {
 
   memberArrived(payload: payloads.round.MemberArrived) {
     console.log(events.round.memberArrived, payload);
-    // TODO: Update member status
-    // TODO: If last to arrive => this.success()
-    this.success();
+    const { memberId } = payload;
+    this.members[memberId].status = enums.member.Status.arrived;
+    const membersArray = Object.values(this.members);
+    // if all members are arrived -> success
+    if (membersArray.every(member => member.status === enums.member.Status.arrived)) {
+      this.success();
+    }
   }
 
   firstRoundCheck(defaultValue: any, updatedValue: any) {
