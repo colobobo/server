@@ -1,4 +1,4 @@
-import { events, Members, payloads, enums, PlayerRoles, PlayerRole } from '@colobobo/library';
+import { events, Members, payloads, enums, PlayerRoles, PlayerRole, round } from '@colobobo/library';
 import { Scene } from '@/types';
 import { gameProperties } from '@/config/game-properties';
 import { Game, History, Player, Room } from '@/classes';
@@ -14,7 +14,6 @@ export class RoundScene implements Scene {
 
   elapsedTime: number;
   startTimestamp: Date;
-  endTimestamp: Date;
 
   duration = gameProperties.variables.duration.defaultValue;
   trapInterval = gameProperties.variables.traps.defaultInterval;
@@ -88,24 +87,31 @@ export class RoundScene implements Scene {
   fail() {
     this.stop();
     if (this.game.life > 0) this.game.life--;
-    emitGlobal<payloads.round.Fail>({ roomId: this.room.id, eventName: events.round.fail, data: {} });
-    this.history.push({ ...this.information, endType: enums.game.EndType.fail });
+
+    const gameData = { ...this.information, endType: enums.game.EndType.fail };
+    emitGlobal<payloads.round.Fail>({ roomId: this.room.id, eventName: events.round.fail, data: gameData });
+    this.history.push(gameData);
     this.end();
   }
 
   success() {
     this.stop();
     this.game.score++;
-    emitGlobal<payloads.round.Success>({ roomId: this.room.id, eventName: events.round.success, data: {} });
-    this.history.push({ ...this.information, endType: enums.game.EndType.success });
+
+    const gameData = { ...this.information, endType: enums.game.EndType.success };
+    emitGlobal<payloads.round.Success>({
+      roomId: this.room.id,
+      eventName: events.round.success,
+      data: gameData,
+    });
+    this.history.push(gameData);
     this.end();
   }
 
   stop() {
     clearInterval(this.interval);
     clearTimeout(this.timeout);
-    this.endTimestamp = new Date();
-    this.elapsedTime = this.endTimestamp.getTime() - this.startTimestamp.getTime();
+    this.elapsedTime = new Date().getTime() - this.startTimestamp.getTime();
   }
 
   end() {
@@ -120,7 +126,6 @@ export class RoundScene implements Scene {
     this.members = {};
     this.world = null;
     this.startTimestamp = null;
-    this.endTimestamp = null;
   }
 
   tick() {
@@ -217,7 +222,7 @@ export class RoundScene implements Scene {
     return shuffle(playerRoles);
   }
 
-  get information() {
+  get information(): round.Information {
     return {
       id: this.id,
       duration: this.duration,

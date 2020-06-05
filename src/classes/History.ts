@@ -1,19 +1,9 @@
-import { enums, Members } from '@colobobo/library';
-
-type Step = {
-  id: number;
-  duration: number;
-  elapsedTime: number;
-  endType: enums.game.EndType;
-  members: Members;
-  score: number;
-  world: enums.World;
-};
+import { round } from '@colobobo/library';
 
 export class History {
-  steps: Step[] = [];
+  steps: round.EndInformation[] = [];
 
-  push(step: Step) {
+  push(step: round.EndInformation) {
     this.steps.push(step);
   }
 }
