@@ -28,11 +28,11 @@ export class Game {
     this.transitionScene.init();
   }
 
-  validateDisposition(payloads: payloads.game.DispositionValidated) {
+  validateDisposition(payload: payloads.game.DispositionSelected) {
     emitGlobal<payloads.game.DispositionValidated>({
       roomId: this.room.id,
       eventName: events.game.dispositionValidated,
-      data: { disposition: payloads.data.disposition },
+      data: { disposition: payload.disposition },
     });
   }
 
