@@ -24,7 +24,7 @@ export const create = function(event: payloads.room.Create) {
       events.room.createSuccess,
       emitCallback<payloads.room.CreateSuccess>({
         id: uid,
-        deviceId: player ? player.id : null,
+        playerId: player?.id,
       }),
     );
   });
@@ -49,7 +49,7 @@ export const join = function(args: payloads.room.Join) {
           events.room.joinSuccess,
           emitCallback<payloads.room.JoinSuccess>({
             id,
-            deviceId: player.id,
+            playerId: player.id,
             isCreator: player.isCreator,
           }),
         );
