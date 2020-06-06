@@ -22,6 +22,9 @@ export class Room implements RoomInterface {
 
   initCreatorEventListeners(player: PlayerInterface) {
     player.socket.on(events.game.start, () => this.game.start());
+    player.socket.on(events.game.dispositionSelected, (payload: payloads.game.DispositionSelected) =>
+      this.game.validateDisposition(payload),
+    );
     player.socket.on(events.transition.ended, () => this.game.transitionScene.end());
   }
 
