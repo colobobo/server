@@ -26,10 +26,14 @@ export class Game {
 
     this.switchToScene(enums.scene.Type.transition);
     this.transitionScene.init();
+  }
 
-    // Uncomment for working app
-    // this.roundScene.init();
-    // this.roundScene.start();
+  validateDisposition(payloads: payloads.game.DispositionValidated) {
+    emitGlobal<payloads.game.DispositionValidated>({
+      roomId: this.room.id,
+      eventName: events.game.dispositionValidated,
+      data: { disposition: payloads.data.disposition },
+    });
   }
 
   switchToScene(sceneType: enums.scene.Type) {
