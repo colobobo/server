@@ -44,10 +44,6 @@ export class Game {
     });
   }
 
-  removeLife() {
-    this.life = this.life === 0 ? 0 : this.life - 1;
-  }
-
   end() {
     console.log(events.game.end);
     emitGlobal<payloads.game.End>({ roomId: this.room.id, eventName: events.game.end });
