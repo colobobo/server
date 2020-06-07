@@ -22,7 +22,7 @@ export class TransitionScene implements Scene {
     emitGlobal<payloads.transition.PlayerReady>({ roomId: this.room.id, eventName: events.transition.playerReady });
     player.isReady = true;
 
-    if (this.game.life > 0) {
+    if (this.game.lives > 0) {
       this.game.roundScene.init();
     }
 
