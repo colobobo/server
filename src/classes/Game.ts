@@ -10,7 +10,7 @@ export class Game {
   roundScene: RoundScene;
   transitionScene: TransitionScene;
   score = 0;
-  life: number = gameProperties.life;
+  lives: number = gameProperties.lives;
 
   constructor(room: Room) {
     this.area = new Area(room);
@@ -26,10 +26,14 @@ export class Game {
 
     this.switchToScene(enums.scene.Type.transition);
     this.transitionScene.init();
+  }
 
-    // Uncomment for working app
-    // this.roundScene.init();
-    // this.roundScene.start();
+  validateDisposition(payload: payloads.game.DispositionSelected) {
+    emitGlobal<payloads.game.DispositionValidated>({
+      roomId: this.room.id,
+      eventName: events.game.dispositionValidated,
+      data: { disposition: payload.disposition },
+    });
   }
 
   switchToScene(sceneType: enums.scene.Type) {
@@ -42,10 +46,6 @@ export class Game {
         type: sceneType,
       },
     });
-  }
-
-  removeLife() {
-    this.life = this.life === 0 ? 0 : this.life - 1;
   }
 
   end() {

@@ -1,4 +1,4 @@
-import { events, Members, payloads, enums, PlayerRoles, PlayerRole } from '@colobobo/library';
+import { events, Members, payloads, enums, PlayerRoles, PlayerRole, round } from '@colobobo/library';
 import { Scene } from '@/types';
 import { gameProperties } from '@/config/game-properties';
 import { Game, History, Player, Room } from '@/classes';
@@ -10,6 +10,10 @@ export class RoundScene implements Scene {
   game: Game;
   id = 0;
   interval: NodeJS.Timeout;
+  timeout: NodeJS.Timeout;
+
+  elapsedTime: number;
+  startTimestamp: Date;
 
   duration = gameProperties.variables.duration.defaultValue;
   trapInterval = gameProperties.variables.traps.defaultInterval;
@@ -60,7 +64,9 @@ export class RoundScene implements Scene {
       data: {
         id: this.id,
         tick: gameProperties.tick,
+        lives: this.game.lives,
         members: this.members,
+        score: this.game.score,
         playerRoles,
         duration,
         world,
@@ -74,35 +80,54 @@ export class RoundScene implements Scene {
   }
 
   start() {
-    this.interval = setInterval(this.tick.bind(this), gameProperties.tick);
     emitGlobal<payloads.round.Start>({ roomId: this.room.id, eventName: events.round.start });
-
-    // TODO: Start timer based on this.duration value to trigger this.fail()
+    this.interval = setInterval(this.tick.bind(this), gameProperties.tick);
+    this.timeout = setTimeout(this.fail.bind(this), this.duration);
+    this.startTimestamp = new Date();
   }
 
   fail() {
-    if (this.game.life > 0) this.game.removeLife();
+    this.stop();
+    if (this.game.lives > 0) this.game.lives--;
+
+    const gameData = { ...this.information, endType: enums.game.EndType.fail };
+    emitGlobal<payloads.round.Fail>({ roomId: this.room.id, eventName: events.round.fail, data: gameData });
+    this.history.push(gameData);
     this.end();
-    emitGlobal<payloads.round.Fail>({ roomId: this.room.id, eventName: events.round.fail, data: {} });
   }
 
   success() {
+    this.stop();
     this.game.score++;
+
+    const gameData = { ...this.information, endType: enums.game.EndType.success };
+    emitGlobal<payloads.round.Success>({
+      roomId: this.room.id,
+      eventName: events.round.success,
+      data: gameData,
+    });
+    this.history.push(gameData);
     this.end();
-    emitGlobal<payloads.round.Success>({ roomId: this.room.id, eventName: events.round.success, data: {} });
+  }
+
+  stop() {
+    clearInterval(this.interval);
+    clearTimeout(this.timeout);
+    this.elapsedTime = new Date().getTime() - this.startTimestamp.getTime();
   }
 
   end() {
     this.clear();
     this.game.switchToScene(enums.scene.Type.transition);
     this.game.transitionScene.init();
-    // TODO: Add to history
-    // TODO: Emit event
   }
 
   clear() {
     console.log('CLEAR ROUND SCENE');
-    clearInterval(this.interval);
+    this.room.players.forEach(player => (player.isReady = false));
+    this.members = {};
+    this.world = null;
+    this.startTimestamp = null;
   }
 
   tick() {
@@ -204,5 +229,17 @@ export class RoundScene implements Scene {
     }
 
     return shuffle(playerRoles);
+  }
+
+  get information(): round.Information {
+    return {
+      id: this.id,
+      duration: this.duration,
+      elapsedTime: this.elapsedTime,
+      members: this.members,
+      score: this.game.score,
+      lives: this.game.lives,
+      world: this.world,
+    };
   }
 }
