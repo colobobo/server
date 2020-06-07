@@ -236,6 +236,7 @@ export class RoundScene implements Scene {
       elapsedTime: this.elapsedTime,
       members: this.members,
       score: this.game.score,
+      life: this.game.life,
       world: this.world,
     };
   }
