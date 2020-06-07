@@ -64,7 +64,9 @@ export class RoundScene implements Scene {
       data: {
         id: this.id,
         tick: gameProperties.tick,
+        lives: this.game.lives,
         members: this.members,
+        score: this.game.score,
         playerRoles,
         duration,
         world,
@@ -86,7 +88,7 @@ export class RoundScene implements Scene {
 
   fail() {
     this.stop();
-    if (this.game.life > 0) this.game.life--;
+    if (this.game.lives > 0) this.game.lives--;
 
     const gameData = { ...this.information, endType: enums.game.EndType.fail };
     emitGlobal<payloads.round.Fail>({ roomId: this.room.id, eventName: events.round.fail, data: gameData });
@@ -236,7 +238,7 @@ export class RoundScene implements Scene {
       elapsedTime: this.elapsedTime,
       members: this.members,
       score: this.game.score,
-      life: this.game.life,
+      lives: this.game.lives,
       world: this.world,
     };
   }

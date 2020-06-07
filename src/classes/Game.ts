@@ -10,7 +10,7 @@ export class Game {
   roundScene: RoundScene;
   transitionScene: TransitionScene;
   score = 0;
-  life: number = gameProperties.life;
+  lives: number = gameProperties.lives;
 
   constructor(room: Room) {
     this.area = new Area(room);
