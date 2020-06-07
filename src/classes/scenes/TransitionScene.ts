@@ -21,6 +21,11 @@ export class TransitionScene implements Scene {
     console.log(events.transition.playerReady, player.id);
     emitGlobal<payloads.transition.PlayerReady>({ roomId: this.room.id, eventName: events.transition.playerReady });
     player.isReady = true;
+
+    if (this.game.lives > 0) {
+      this.game.roundScene.init();
+    }
+
     // TODO: If all ready => start transition
     this.start();
   }
@@ -35,7 +40,6 @@ export class TransitionScene implements Scene {
 
     if (this.game.lives > 0) {
       this.game.switchToScene(enums.scene.Type.round);
-      this.game.roundScene.init();
     } else {
       this.game.end();
     }
