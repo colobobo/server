@@ -33,7 +33,7 @@ export class TransitionScene implements Scene {
   end() {
     console.log(events.transition.ended);
 
-    if (this.game.life > 0) {
+    if (this.game.lives > 0) {
       this.game.switchToScene(enums.scene.Type.round);
       this.game.roundScene.init();
     } else {
