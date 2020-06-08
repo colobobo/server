@@ -15,16 +15,17 @@ export class TransitionScene implements Scene {
   init() {
     console.log(events.transition.init);
     emitGlobal<payloads.transition.Init>({ roomId: this.room.id, eventName: events.transition.init });
+
+    // TODO: remove, this is temporary
+    if (this.game.lives > 0) {
+      this.game.roundScene.init();
+    }
   }
 
   playerReady(player: Player) {
     console.log(events.transition.playerReady, player.id);
     emitGlobal<payloads.transition.PlayerReady>({ roomId: this.room.id, eventName: events.transition.playerReady });
     // player.isReady = true;
-
-    if (this.game.lives > 0) {
-      this.game.roundScene.init();
-    }
 
     // TODO: If all ready => start transition
     this.start();
