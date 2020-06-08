@@ -20,7 +20,7 @@ export class TransitionScene implements Scene {
   playerReady(player: Player) {
     console.log(events.transition.playerReady, player.id);
     emitGlobal<payloads.transition.PlayerReady>({ roomId: this.room.id, eventName: events.transition.playerReady });
-    player.isReady = true;
+    // player.isReady = true;
 
     if (this.game.lives > 0) {
       this.game.roundScene.init();
