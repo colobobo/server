@@ -81,6 +81,7 @@ export class RoundScene implements Scene {
   }
 
   start() {
+    console.log(events.round.start);
     emitGlobal<payloads.round.Start>({ roomId: this.room.id, eventName: events.round.start });
     this.interval = setInterval(this.tick.bind(this), gameProperties.tick);
     this.timeout = setTimeout(this.fail.bind(this), this.duration);
