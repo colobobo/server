@@ -75,6 +75,7 @@ export class RoundScene implements Scene {
   }
 
   playerReady(player: Player) {
+    console.log(events.round.playerReady, player.id);
     player.isReady = true;
     if (Array.from(this.room.players.values()).every(player => player.isReady)) this.start();
   }
