@@ -126,7 +126,6 @@ export class RoundScene implements Scene {
     console.log('CLEAR ROUND SCENE');
     this.room.players.forEach(player => (player.isReady = false));
     this.world = null;
-    this.startTimestamp = null;
   }
 
   tick() {

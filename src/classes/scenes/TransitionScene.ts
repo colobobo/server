@@ -48,6 +48,6 @@ export class TransitionScene implements Scene {
   }
 
   clear() {
-    console.log('CLEAR TRANSITION SCENE');
+    this.room.players.forEach(player => (player.isReady = false));
   }
 }
