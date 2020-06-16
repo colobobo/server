@@ -9,11 +9,11 @@ export class RoundScene implements Scene {
   room: Room;
   game: Game;
   id = 0;
-  interval: NodeJS.Timeout;
-  timeout: NodeJS.Timeout;
+  tick: NodeJS.Timeout;
+  timer: NodeJS.Timeout;
 
-  elapsedTime: number;
   startTimestamp: Date;
+  playedIntervals: number[] = [];
 
   duration = gameProperties.variables.duration.defaultValue;
   trapInterval = gameProperties.variables.traps.defaultInterval;
@@ -83,9 +83,22 @@ export class RoundScene implements Scene {
   start() {
     console.log(events.round.start);
     emitGlobal<payloads.round.Start>({ roomId: this.room.id, eventName: events.round.start });
-    this.interval = setInterval(this.tick.bind(this), gameProperties.tick);
-    this.timeout = setTimeout(this.fail.bind(this), this.duration);
+    this.tick = setInterval(this.emitTick.bind(this), gameProperties.tick);
+    this.timer = setTimeout(this.fail.bind(this), this.duration);
     this.startTimestamp = new Date();
+  }
+
+  restart() {
+    this.tick = setInterval(this.emitTick.bind(this), gameProperties.tick);
+    this.timer = setTimeout(this.fail.bind(this), this.duration - this.elapsedTime);
+    this.startTimestamp = new Date();
+  }
+
+  stop() {
+    clearInterval(this.tick);
+    clearTimeout(this.timer);
+    const elapsedTime = new Date().getTime() - this.startTimestamp.getTime();
+    this.playedIntervals.push(elapsedTime);
   }
 
   fail() {
@@ -112,10 +125,17 @@ export class RoundScene implements Scene {
     this.end();
   }
 
-  stop() {
-    clearInterval(this.interval);
-    clearTimeout(this.timeout);
-    this.elapsedTime = new Date().getTime() - this.startTimestamp.getTime();
+  updateStatus({ status }: payloads.round.StatusUpdate) {
+    console.log(events.round.statusUpdate);
+
+    if (status === enums.round.Status.play) this.restart();
+    if (status === enums.round.Status.pause) this.stop();
+
+    emitGlobal<payloads.round.StatusUpdateSuccess>({
+      roomId: this.room.id,
+      eventName: events.round.statusUpdateSuccess,
+      data: { status },
+    });
   }
 
   end() {
@@ -127,10 +147,11 @@ export class RoundScene implements Scene {
   clear() {
     console.log('CLEAR ROUND SCENE');
     this.room.players.forEach(player => (player.isReady = false));
+    this.playedIntervals = [];
     this.world = null;
   }
 
-  tick() {
+  emitTick() {
     emitGlobal<payloads.round.Tick>({
       roomId: this.room.id,
       eventName: events.round.tick,
@@ -195,14 +216,10 @@ export class RoundScene implements Scene {
       this.trapInterval,
       Math.round(this.trapInterval * gameProperties.variables.traps.decreaseCoefficient),
     );
-    const playerRoles = [
+    const playerRoles: PlayerRole[] = [
       {
         role: enums.player.Role.platform,
         properties: { direction: getRandomArrayElement(Object.values(enums.round.Direction)) },
-      },
-      {
-        role: enums.player.Role.trap,
-        properties: { type: getRandomArrayElement(Object.values(enums.Traps[this.world])), interval: trapInterval },
       },
     ];
 
@@ -229,6 +246,10 @@ export class RoundScene implements Scene {
     }
 
     return shuffle(playerRoles);
+  }
+
+  get elapsedTime() {
+    return this.playedIntervals.reduce((accumulator, currentValue) => accumulator + currentValue);
   }
 
   get information(): round.Information {
