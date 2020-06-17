@@ -82,7 +82,13 @@ export class RoundScene implements Scene {
 
   start() {
     console.log(events.round.start);
-    emitGlobal<payloads.round.Start>({ roomId: this.room.id, eventName: events.round.start });
+    emitGlobal<payloads.round.Start>({
+      roomId: this.room.id,
+      eventName: events.round.start,
+      data: {
+        endRoundTimeStamp: new Date().getTime() + this.duration,
+      },
+    });
     this.tick = setInterval(this.emitTick.bind(this), gameProperties.tick);
     this.timer = setTimeout(this.fail.bind(this), this.duration);
     this.startTimestamp = new Date();
@@ -90,7 +96,7 @@ export class RoundScene implements Scene {
 
   restart() {
     this.tick = setInterval(this.emitTick.bind(this), gameProperties.tick);
-    this.timer = setTimeout(this.fail.bind(this), this.duration - this.elapsedTime);
+    this.timer = setTimeout(this.fail.bind(this), this.remainingTime);
     this.startTimestamp = new Date();
   }
 
@@ -134,7 +140,10 @@ export class RoundScene implements Scene {
     emitGlobal<payloads.round.StatusUpdateSuccess>({
       roomId: this.room.id,
       eventName: events.round.statusUpdateSuccess,
-      data: { status },
+      data: {
+        status,
+        endRoundTimeStamp: new Date().getTime() + this.remainingTime,
+      },
     });
   }
 
@@ -250,6 +259,10 @@ export class RoundScene implements Scene {
 
   get elapsedTime() {
     return this.playedIntervals.reduce((accumulator, currentValue) => accumulator + currentValue);
+  }
+
+  get remainingTime() {
+    return this.duration - this.elapsedTime;
   }
 
   get information(): round.Information {
