@@ -147,8 +147,6 @@ export class RoundScene {
     });
     this.history.push(gameData);
 
-    console.log('ROUND END', gameData);
-
     this.clear();
     this.game.switchToScene(enums.scene.Type.transition);
     this.game.transitionScene.init();
