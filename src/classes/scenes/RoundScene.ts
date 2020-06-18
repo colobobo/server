@@ -1,10 +1,9 @@
 import { events, Members, payloads, enums, PlayerRoles, PlayerRole, round } from '@colobobo/library';
-import { Scene } from '@/types';
 import { gameProperties } from '@/config/game-properties';
 import { Game, History, Player, Room } from '@/classes';
 import { emitGlobal, getRandomArrayElement, shuffle } from '@/utils';
 
-export class RoundScene implements Scene {
+export class RoundScene {
   history: History;
   room: Room;
   game: Game;
@@ -90,14 +89,14 @@ export class RoundScene implements Scene {
         endRoundTimeStamp: new Date().getTime() + this.duration,
       },
     });
-    this.tick = setInterval(this.emitTick.bind(this), gameProperties.tick);
-    this.timer = setTimeout(this.fail.bind(this), this.duration);
+    this.tick = setInterval(() => this.emitTick(), gameProperties.tick);
+    this.timer = setTimeout(() => this.fail(enums.round.FailCauses.timer), this.duration);
     this.startTimestamp = new Date();
   }
 
   restart() {
-    this.tick = setInterval(this.emitTick.bind(this), gameProperties.tick);
-    this.timer = setTimeout(this.fail.bind(this), this.remainingTime);
+    this.tick = setInterval(() => this.emitTick, gameProperties.tick);
+    this.timer = setTimeout(() => this.fail(enums.round.FailCauses.timer), this.remainingTime);
     this.startTimestamp = new Date();
   }
 
@@ -106,31 +105,6 @@ export class RoundScene implements Scene {
     clearTimeout(this.timer);
     const elapsedTime = new Date().getTime() - this.startTimestamp.getTime();
     this.playedIntervals.push(elapsedTime);
-  }
-
-  fail() {
-    this.stop();
-    if (this.game.lives > 0) this.game.lives--;
-
-    const gameData = { ...this.information, endType: enums.game.EndType.fail };
-    emitGlobal<payloads.round.Fail>({ roomId: this.room.id, eventName: events.round.fail, data: gameData });
-    this.history.push(gameData);
-    this.end();
-  }
-
-  success() {
-    this.stop();
-    this.game.score++;
-    this.successes++;
-
-    const gameData = { ...this.information, endType: enums.game.EndType.success };
-    emitGlobal<payloads.round.Success>({
-      roomId: this.room.id,
-      eventName: events.round.success,
-      data: gameData,
-    });
-    this.history.push(gameData);
-    this.end();
   }
 
   updateStatus({ status }: payloads.round.StatusUpdate) {
@@ -149,8 +123,32 @@ export class RoundScene implements Scene {
     });
   }
 
-  end() {
-    // TODO: Add event & remove success + fail
+  success() {
+    this.stop();
+    this.game.score++; // TODO: Update incrementation
+    this.successes++;
+    this.end(enums.round.EndType.success, null);
+  }
+
+  fail(cause: enums.round.FailCauses) {
+    this.stop();
+    if (this.game.lives > 0) this.game.lives--;
+    this.end(enums.round.EndType.fail, cause);
+  }
+
+  end(endType: enums.round.EndType, failCause: enums.round.FailCauses) {
+    // TODO: Add cause of endType === fail
+
+    const gameData: round.EndInformation = { ...this.information, endType, failCause };
+    emitGlobal<payloads.round.End>({
+      roomId: this.room.id,
+      eventName: events.round.end,
+      data: gameData,
+    });
+    this.history.push(gameData);
+
+    console.log('ROUND END', gameData);
+
     this.clear();
     this.game.switchToScene(enums.scene.Type.transition);
     this.game.transitionScene.init();
@@ -181,13 +179,13 @@ export class RoundScene implements Scene {
 
   memberDragStart(payload: payloads.round.MemberDragStart) {
     console.log(events.round.memberDragStart, payload);
-    // TODO: Update member status
+    this.members[payload.memberId].status = enums.member.Status.active;
     this.members[payload.memberId].manager = payload.playerId;
   }
 
   memberDragEnd(payload: payloads.round.MemberDragEnd) {
     console.log(events.round.memberDragEnd, payload);
-    // TODO: Update member status
+    // TODO: Do something?
   }
 
   memberMove(payload: payloads.round.MemberMove) {
@@ -197,23 +195,20 @@ export class RoundScene implements Scene {
 
   memberTrapped(payload: payloads.round.MemberTrapped) {
     console.log(events.round.memberTrapped, payload);
-    // TODO: Update member status
-    const { memberId } = payload;
-    this.members[memberId].status = enums.member.Status.waiting;
+    this.members[payload.memberId].status = enums.member.Status.waiting;
   }
 
   memberDropped(payload: payloads.round.MemberDropped) {
     console.log(events.round.memberDropped, payload);
-    // TODO: Update member status
-    // TODO: this.fail()
+    this.members[payload.memberId].status = enums.member.Status.dropped;
+    this.fail(enums.round.FailCauses.memberDropped);
   }
 
   memberArrived(payload: payloads.round.MemberArrived) {
     console.log(events.round.memberArrived, payload);
-    const { memberId } = payload;
-    this.members[memberId].status = enums.member.Status.arrived;
+    this.members[payload.memberId].status = enums.member.Status.arrived;
     const membersArray = Object.values(this.members);
-    // if all members are arrived -> success
+
     if (membersArray.every(member => member.status === enums.member.Status.arrived)) {
       this.success();
     }

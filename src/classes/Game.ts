@@ -57,6 +57,7 @@ export class Game {
 
   end() {
     console.log(events.game.end);
+    // TODO: Add roundScene history
     emitGlobal<payloads.game.End>({ roomId: this.room.id, eventName: events.game.end });
   }
 
