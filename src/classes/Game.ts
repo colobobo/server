@@ -21,7 +21,14 @@ export class Game {
 
   start() {
     console.log(events.game.startSuccess);
-    emitGlobal<payloads.game.StartSuccess>({ roomId: this.room.id, eventName: events.game.startSuccess });
+    emitGlobal<payloads.game.StartSuccess>({
+      roomId: this.room.id,
+      eventName: events.game.startSuccess,
+      data: {
+        lives: this.lives,
+      },
+    });
+
     // TODO: Add global.io.in(this.room.id).emit('game:start:error');
 
     this.switchToScene(enums.scene.Type.transition);
