@@ -34,6 +34,10 @@ export class Room implements RoomInterface {
     player.socket.on(events.transition.playerReady, () => this.game.transitionScene.playerReady(player));
     player.socket.on(events.round.playerReady, () => this.game.roundScene.playerReady(player));
 
+    player.socket.on(events.round.statusUpdate, (payload: payloads.round.StatusUpdate) =>
+      this.game.roundScene.updateStatus(payload),
+    );
+
     player.socket.on(events.round.memberSpawned, (payload: payloads.round.MemberSpawned) =>
       this.game.roundScene.memberSpawned(payload),
     );

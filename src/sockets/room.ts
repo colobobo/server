@@ -19,6 +19,7 @@ export const create = function(event: payloads.room.Create) {
     }
 
     global.rooms.set(uid, room);
+    console.log('CREATED ROOM', uid);
 
     this.emit(
       events.room.createSuccess,
