@@ -9,6 +9,7 @@ export class RoundScene implements Scene {
   room: Room;
   game: Game;
   id = 0;
+  successes = 0;
   tick: NodeJS.Timeout;
   timer: NodeJS.Timeout;
 
@@ -120,6 +121,7 @@ export class RoundScene implements Scene {
   success() {
     this.stop();
     this.game.score++;
+    this.successes++;
 
     const gameData = { ...this.information, endType: enums.game.EndType.success };
     emitGlobal<payloads.round.Success>({
@@ -132,7 +134,7 @@ export class RoundScene implements Scene {
   }
 
   updateStatus({ status }: payloads.round.StatusUpdate) {
-    console.log(events.round.statusUpdate);
+    console.log(events.round.statusUpdate, status);
 
     if (status === enums.round.Status.play) this.restart();
     if (status === enums.round.Status.pause) this.stop();
@@ -148,6 +150,7 @@ export class RoundScene implements Scene {
   }
 
   end() {
+    // TODO: Add event & remove success + fail
     this.clear();
     this.game.switchToScene(enums.scene.Type.transition);
     this.game.transitionScene.init();
@@ -233,7 +236,7 @@ export class RoundScene implements Scene {
     ];
 
     const maxTrapsToAdd = this.room.players.size - playerRoles.length;
-    const difficultySteps = Math.floor(this.id / gameProperties.difficultyStep);
+    const difficultySteps = Math.floor(this.successes / gameProperties.difficultyStep);
     const trapsToAdd = difficultySteps > maxTrapsToAdd ? maxTrapsToAdd : difficultySteps;
     const offset = playerRoles.length + trapsToAdd;
     const blanksToAdd = this.room.players.size - offset;
