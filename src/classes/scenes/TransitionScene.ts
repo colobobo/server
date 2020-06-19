@@ -1,9 +1,8 @@
 import { events, payloads, enums } from '@colobobo/library';
-import { Scene } from '@/types';
 import { Game, Player, Room } from '@/classes';
 import { emitGlobal } from '@/utils';
 
-export class TransitionScene implements Scene {
+export class TransitionScene {
   game: Game;
   room: Room;
 
