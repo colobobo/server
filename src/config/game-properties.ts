@@ -1,7 +1,10 @@
 export const gameProperties = {
   difficultyStep: 3,
   lives: 4,
-  members: 5,
+  members: {
+    min: 2,
+    max: 5,
+  },
   players: { min: 3, max: 6 },
   tick: (1000 / 60) * 2,
   variables: {

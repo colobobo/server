@@ -41,7 +41,8 @@ export class RoundScene {
     this.duration = duration;
     this.world = world;
 
-    for (let i = 0; i < gameProperties.members; i++) {
+    const availableMembers = this.availableMembers;
+    for (let i = 0; i < availableMembers; i++) {
       this.members[`member-${i + 1}`] = {
         isDrag: false,
         skin: skins[i],
@@ -216,6 +217,15 @@ export class RoundScene {
     return this.id === 1 ? defaultValue : updatedValue;
   }
 
+  get difficultySteps(): number {
+    return Math.floor(this.successes / gameProperties.difficultyStep);
+  }
+
+  get availableMembers(): number {
+    const stepMembers = gameProperties.members.min + this.difficultySteps;
+    return stepMembers > gameProperties.members.max ? gameProperties.members.max : stepMembers;
+  }
+
   get availablePlayerRoles(): PlayerRole[] {
     const trapInterval = this.firstRoundCheck(
       this.trapInterval,
@@ -229,8 +239,7 @@ export class RoundScene {
     ];
 
     const maxTrapsToAdd = this.room.players.size - playerRoles.length;
-    const difficultySteps = Math.floor(this.successes / gameProperties.difficultyStep);
-    const trapsToAdd = difficultySteps > maxTrapsToAdd ? maxTrapsToAdd : difficultySteps;
+    const trapsToAdd = this.difficultySteps > maxTrapsToAdd ? maxTrapsToAdd : this.difficultySteps;
     const offset = playerRoles.length + trapsToAdd;
     const blanksToAdd = this.room.players.size - offset;
 
