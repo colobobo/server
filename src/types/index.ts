@@ -1,6 +1,32 @@
 import { Socket } from 'socket.io';
 import { enums } from '@colobobo/library';
-import { Game, Player } from '@/classes';
+import { Game } from '@/classes';
+
+export interface GameProperties {
+  difficultyStep: number;
+  lives: number;
+  members: {
+    min: number;
+    max: number;
+  };
+  players: {
+    min: number;
+    max: number;
+  };
+  tick: number;
+  variables: {
+    [playerNumber: number]: {
+      duration: {
+        defaultValue: number;
+        decreaseCoefficient: number;
+      };
+      traps: {
+        defaultInterval: number;
+        decreaseCoefficient: number;
+      };
+    };
+  };
+}
 
 export interface RoomInterface {
   id: string;
