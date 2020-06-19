@@ -1,6 +1,6 @@
-import { GameProperties } from '@/types';
+import { game } from '@colobobo/library';
 
-export const gameProperties: GameProperties = {
+export const gameProperties: game.Properties = {
   difficultyStep: 3,
   lives: 4,
   members: { min: 2, max: 5 },
