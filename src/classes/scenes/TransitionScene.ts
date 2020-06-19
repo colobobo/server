@@ -23,11 +23,8 @@ export class TransitionScene {
 
   playerReady(player: Player) {
     console.log(events.transition.playerReady, player.id);
-    emitGlobal<payloads.transition.PlayerReady>({ roomId: this.room.id, eventName: events.transition.playerReady });
-    // player.isReady = true;
-
-    // TODO: If all ready => start transition
-    this.start();
+    player.isReady = true;
+    if (Array.from(this.room.players.values()).every(player => player.isReady)) this.start();
   }
 
   start() {
@@ -37,6 +34,8 @@ export class TransitionScene {
 
   end() {
     console.log(events.transition.ended);
+
+    this.room.players.forEach(player => (player.isReady = false));
 
     if (this.game.lives > 0) {
       this.game.switchToScene(enums.scene.Type.round);
