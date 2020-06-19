@@ -1,4 +1,14 @@
-import { events, Members, payloads, enums, PlayerRoles, PlayerRole, round } from '@colobobo/library';
+import {
+  events,
+  Members,
+  payloads,
+  enums,
+  PlayerRoles,
+  PlayerRole,
+  round,
+  PlayerRolePropertiesPlateform,
+  PlayerRolePropertiesTrap,
+} from '@colobobo/library';
 import { gameProperties } from '@/config/game-properties';
 import { Game, History, Player, Room } from '@/classes';
 import { emitGlobal, getRandomArrayElement, shuffle } from '@/utils';
@@ -243,7 +253,9 @@ export class RoundScene {
     const playerRoles: PlayerRole[] = [
       {
         role: enums.player.Role.platform,
-        properties: { direction: getRandomArrayElement(Object.values(enums.round.Direction)) },
+        properties: {
+          direction: getRandomArrayElement(Object.values(enums.round.Direction)),
+        } as PlayerRolePropertiesPlateform,
       },
     ];
     const maxTrapsToAdd = this.room.players.size - playerRoles.length;
@@ -264,7 +276,10 @@ export class RoundScene {
     for (let i = 0; i < trapsToAdd; i++) {
       playerRoles.push({
         role: enums.player.Role.trap,
-        properties: { type: getRandomArrayElement(Object.values(enums.Traps[this.world])), interval: trapInterval },
+        properties: {
+          type: getRandomArrayElement(Object.values(enums.Traps[this.world])),
+          interval: trapInterval,
+        } as PlayerRolePropertiesTrap,
       });
     }
 
