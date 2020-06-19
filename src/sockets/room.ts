@@ -26,6 +26,7 @@ export const create = function(event: payloads.room.Create) {
       emitCallback<payloads.room.CreateSuccess>({
         id: uid,
         playerId: player?.id,
+        players: gameProperties.players,
       }),
     );
   });
