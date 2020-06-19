@@ -17,11 +17,3 @@ export interface PlayerInterface {
   socket: Socket;
   status: enums.player.Status;
 }
-
-export interface Scene {
-  init: () => void;
-  playerReady: (player: Player) => void;
-  start: () => void;
-  end: () => void;
-  clear: () => void;
-}
