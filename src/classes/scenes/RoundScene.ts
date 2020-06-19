@@ -15,8 +15,8 @@ export class RoundScene {
   startTimestamp: Date;
   playedIntervals: number[] = [];
 
-  duration = gameProperties.variables.duration.defaultValue;
-  trapInterval = gameProperties.variables.traps.defaultInterval;
+  duration: number = undefined;
+  trapInterval: number = undefined;
   world: enums.World;
   members: Members = {};
 
@@ -29,10 +29,19 @@ export class RoundScene {
   init() {
     this.id++;
 
-    const duration = this.firstRoundCheck(
-      this.duration,
-      Math.round(this.duration * gameProperties.variables.duration.decreaseCoefficient),
-    );
+    if (this.isFirstRound) {
+      this.duration = gameProperties.variables[this.room.players.size].duration.defaultValue;
+      this.trapInterval = gameProperties.variables[this.room.players.size].traps.defaultInterval;
+    }
+
+    console.log('SUCCESSES', this.successes);
+    const duration = this.history.isLastRoundSuccess
+      ? this.firstRoundCheck(
+          this.duration,
+          // TODO: Use Math.pow()?
+          Math.round(this.duration * gameProperties.variables[this.room.players.size].duration.decreaseCoefficient),
+        )
+      : this.duration;
     const playerRoles: PlayerRoles = {};
     const playerIds = Array.from(this.room.players.keys());
     const skins = shuffle(Object.values(enums.member.Skins));
@@ -58,7 +67,7 @@ export class RoundScene {
       playerRoles[playerIds[i]] = availablePlayerRoles[i];
     }
 
-    console.log(events.round.init);
+    console.log(events.round.init, duration, playerRoles);
     emitGlobal<payloads.round.Init>({
       roomId: this.room.id,
       eventName: events.round.init,
@@ -138,8 +147,6 @@ export class RoundScene {
   }
 
   end(endType: enums.round.EndType, failCause: enums.round.FailCauses) {
-    // TODO: Add cause of endType === fail
-
     const gameData: round.EndInformation = { ...this.information, endType, failCause };
     emitGlobal<payloads.round.End>({
       roomId: this.room.id,
@@ -214,7 +221,11 @@ export class RoundScene {
   }
 
   firstRoundCheck(defaultValue: any, updatedValue: any) {
-    return this.id === 1 ? defaultValue : updatedValue;
+    return this.isFirstRound ? defaultValue : updatedValue;
+  }
+
+  get isFirstRound(): boolean {
+    return this.id === 1;
   }
 
   get difficultySteps(): number {
@@ -227,21 +238,24 @@ export class RoundScene {
   }
 
   get availablePlayerRoles(): PlayerRole[] {
-    const trapInterval = this.firstRoundCheck(
-      this.trapInterval,
-      Math.round(this.trapInterval * gameProperties.variables.traps.decreaseCoefficient),
-    );
     const playerRoles: PlayerRole[] = [
       {
         role: enums.player.Role.platform,
         properties: { direction: getRandomArrayElement(Object.values(enums.round.Direction)) },
       },
     ];
-
     const maxTrapsToAdd = this.room.players.size - playerRoles.length;
     const trapsToAdd = this.difficultySteps > maxTrapsToAdd ? maxTrapsToAdd : this.difficultySteps;
     const offset = playerRoles.length + trapsToAdd;
     const blanksToAdd = this.room.players.size - offset;
+    const trapInterval =
+      trapsToAdd > 0 && this.successes === gameProperties.difficultyStep + 1 && this.history.isLastRoundSuccess
+        ? this.firstRoundCheck(
+            this.trapInterval,
+            // TODO: Use Math.pow()?
+            Math.round(this.trapInterval * gameProperties.variables[this.room.players.size].traps.decreaseCoefficient),
+          )
+        : this.trapInterval;
 
     this.trapInterval = trapInterval;
 
