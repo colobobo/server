@@ -14,6 +14,10 @@ export interface GameProperties {
     max: number;
   };
   tick: number;
+  score: {
+    memberArrived: number;
+    memberTrapped: number;
+  };
   variables: {
     [playerNumber: number]: {
       duration: {

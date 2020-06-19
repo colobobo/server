@@ -135,8 +135,8 @@ export class RoundScene {
 
   success() {
     this.stop();
-    this.game.score++; // TODO: Update incrementation
     this.successes++;
+    this.game.score += Math.round(this.remainingTime / 1000);
     this.end(enums.round.EndType.success, null);
   }
 
@@ -201,6 +201,7 @@ export class RoundScene {
 
   memberTrapped(payload: payloads.round.MemberTrapped) {
     console.log(events.round.memberTrapped, payload);
+    this.game.score += gameProperties.score.memberTrapped;
     this.members[payload.memberId].status = enums.member.Status.waiting;
   }
 
@@ -212,6 +213,7 @@ export class RoundScene {
 
   memberArrived(payload: payloads.round.MemberArrived) {
     console.log(events.round.memberArrived, payload);
+    this.game.score += gameProperties.score.memberArrived;
     this.members[payload.memberId].status = enums.member.Status.arrived;
     const membersArray = Object.values(this.members);
 
