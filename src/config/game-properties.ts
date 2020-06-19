@@ -6,6 +6,10 @@ export const gameProperties: GameProperties = {
   members: { min: 2, max: 5 },
   players: { min: 3, max: 6 },
   tick: (1000 / 60) * 2,
+  score: {
+    memberArrived: 20,
+    memberTrapped: -5,
+  },
   variables: {
     [3]: {
       duration: {
