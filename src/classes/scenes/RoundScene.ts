@@ -30,6 +30,9 @@ export class RoundScene {
   world: enums.World;
   members: Members = {};
 
+  arrivedMembers: round.ScoreDetail = { value: 0, points: 0 };
+  traps: round.ScoreDetail = { value: 0, points: 0 };
+
   constructor(room: Room, game: Game) {
     this.game = game;
     this.room = room;
@@ -146,7 +149,7 @@ export class RoundScene {
   success() {
     this.stop();
     this.successes++;
-    this.game.score += Math.round(this.remainingTime / 1000);
+    this.game.score += this.remainingTimeScore;
     this.end(enums.round.EndType.success, null);
   }
 
@@ -157,13 +160,25 @@ export class RoundScene {
   }
 
   end(endType: enums.round.EndType, failCause: enums.round.FailCauses) {
-    const gameData: round.EndInformation = { ...this.information, endType, failCause };
+    const gameData: round.EndInformation = {
+      endType,
+      failCause,
+      ...this.information,
+      scoreDetails: {
+        arrivedMembers: this.arrivedMembers,
+        traps: this.traps,
+        ...(endType === enums.round.EndType.success && {
+          remainingTime: { value: this.remainingTime, points: this.remainingTimeScore },
+        }),
+      },
+    };
     emitGlobal<payloads.round.End>({
       roomId: this.room.id,
       eventName: events.round.end,
       data: gameData,
     });
     this.history.push(gameData);
+    console.log(events.round.end, gameData);
 
     this.clear();
     this.game.switchToScene(enums.scene.Type.transition);
@@ -173,6 +188,8 @@ export class RoundScene {
   clear() {
     console.log('CLEAR ROUND SCENE');
     this.room.players.forEach(player => (player.isReady = false));
+    this.arrivedMembers = { value: 0, points: 0 };
+    this.traps = { value: 0, points: 0 };
     this.playedIntervals = [];
     this.world = null;
   }
@@ -211,6 +228,8 @@ export class RoundScene {
 
   memberTrapped(payload: payloads.round.MemberTrapped) {
     console.log(events.round.memberTrapped, payload);
+    this.traps.value++;
+    this.traps.points += gameProperties.score.memberTrapped;
     this.game.score += gameProperties.score.memberTrapped;
     this.members[payload.memberId].status = enums.member.Status.waiting;
   }
@@ -223,6 +242,8 @@ export class RoundScene {
 
   memberArrived(payload: payloads.round.MemberArrived) {
     console.log(events.round.memberArrived, payload);
+    this.arrivedMembers.value++;
+    this.arrivedMembers.points += gameProperties.score.memberArrived;
     this.game.score += gameProperties.score.memberArrived;
     this.members[payload.memberId].status = enums.member.Status.arrived;
     const membersArray = Object.values(this.members);
@@ -299,6 +320,10 @@ export class RoundScene {
 
   get remainingTime() {
     return this.duration - this.elapsedTime;
+  }
+
+  get remainingTimeScore() {
+    return Math.floor(this.remainingTime / 1000);
   }
 
   get information(): round.Information {
