@@ -171,7 +171,7 @@ export class RoundScene {
         total: roundTotalScore,
         details: {
           arrivedMembers: this.arrivedMembers,
-          ...(this.traps.value > 0 && { traps: this.traps }), // TODO: Change condition if there was trap in game
+          ...(this.difficultySteps > 0 && { traps: this.traps }),
           ...(isRoundSuccess && {
             remainingTime: { value: this.remainingTime, points: this.remainingTimeScore },
           }),
