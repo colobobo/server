@@ -51,8 +51,9 @@ export const join = function(args: payloads.room.Join) {
           events.room.joinSuccess,
           emitCallback<payloads.room.JoinSuccess>({
             id,
-            playerId: player.id,
             isCreator: player.isCreator,
+            playerId: player.id,
+            players: gameProperties.players,
           }),
         );
 
