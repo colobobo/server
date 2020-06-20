@@ -166,7 +166,7 @@ export class RoundScene {
       ...this.information,
       scoreDetails: {
         arrivedMembers: this.arrivedMembers,
-        traps: this.traps,
+        ...(this.traps.value > 0 && { traps: this.traps }),
         ...(endType === enums.round.EndType.success && {
           remainingTime: { value: this.remainingTime, points: this.remainingTimeScore },
         }),
