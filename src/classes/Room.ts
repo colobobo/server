@@ -49,6 +49,9 @@ export class Room implements RoomInterface {
     player.socket.on(events.round.memberDragEnd, (payload: payloads.round.MemberDragEnd) =>
       this.game.roundScene.memberDragEnd(payload),
     );
+    player.socket.on(events.round.memberUpdateManager, (payload: payloads.round.MemberUpdateManager) =>
+      this.game.roundScene.memberUpdateManager(payload),
+    );
     player.socket.on(events.round.memberMove, (payload: payloads.round.MemberMove) =>
       this.game.roundScene.memberMove(payload),
     );

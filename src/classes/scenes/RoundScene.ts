@@ -218,13 +218,19 @@ export class RoundScene {
 
   memberDragStart(payload: payloads.round.MemberDragStart) {
     console.log(events.round.memberDragStart, payload);
+    this.members[payload.memberId].isDrag = true;
     this.members[payload.memberId].status = enums.member.Status.active;
     this.members[payload.memberId].manager = payload.playerId;
   }
 
   memberDragEnd(payload: payloads.round.MemberDragEnd) {
     console.log(events.round.memberDragEnd, payload);
-    // TODO: Do something?
+    this.members[payload.memberId].isDrag = false;
+  }
+
+  memberUpdateManager(payload: payloads.round.MemberUpdateManager) {
+    console.log(events.round.memberUpdateManager, payload);
+    this.members[payload.memberId].manager = payload.playerId;
   }
 
   memberMove(payload: payloads.round.MemberMove) {
