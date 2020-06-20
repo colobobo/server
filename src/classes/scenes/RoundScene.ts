@@ -167,13 +167,15 @@ export class RoundScene {
       endType,
       failCause,
       ...this.information,
-      roundScoreDetails: {
+      roundScore: {
         total: roundTotalScore,
-        arrivedMembers: this.arrivedMembers,
-        ...(this.traps.value > 0 && { traps: this.traps }),
-        ...(isRoundSuccess && {
-          remainingTime: { value: this.remainingTime, points: this.remainingTimeScore },
-        }),
+        details: {
+          arrivedMembers: this.arrivedMembers,
+          ...(this.traps.value > 0 && { traps: this.traps }),
+          ...(isRoundSuccess && {
+            remainingTime: { value: this.remainingTime, points: this.remainingTimeScore },
+          }),
+        },
       },
     };
     emitGlobal<payloads.round.End>({
