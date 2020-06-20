@@ -9,8 +9,9 @@ export class Game {
   sceneType: enums.scene.Type;
   roundScene: RoundScene;
   transitionScene: TransitionScene;
-  score = 0;
   lives: number = gameProperties.lives;
+
+  private score = 0;
 
   constructor(room: Room) {
     this.area = new Area(room);
@@ -55,6 +56,14 @@ export class Game {
     });
   }
 
+  addScore(scoreValue: number) {
+    if (this.score + scoreValue <= 0) {
+      this.score = 0;
+    } else {
+      this.score += scoreValue;
+    }
+  }
+
   end() {
     console.log(events.game.end);
     // TODO: Add roundScene history
@@ -63,5 +72,9 @@ export class Game {
 
   kill() {
     console.log('GAME KILLED');
+  }
+
+  get scoreValue() {
+    return this.score;
   }
 }

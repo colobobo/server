@@ -89,7 +89,7 @@ export class RoundScene {
         tick: gameProperties.tick,
         lives: this.game.lives,
         members: this.members,
-        score: this.game.score,
+        score: this.game.scoreValue,
         playerRoles,
         duration,
         world,
@@ -149,7 +149,7 @@ export class RoundScene {
   success() {
     this.stop();
     this.successes++;
-    this.game.score += this.remainingTimeScore;
+    this.game.addScore(this.remainingTimeScore);
     this.end(enums.round.EndType.success, null);
   }
 
@@ -236,7 +236,7 @@ export class RoundScene {
     console.log(events.round.memberTrapped, payload);
     this.traps.value++;
     this.traps.points += gameProperties.score.memberTrapped;
-    this.game.score += gameProperties.score.memberTrapped;
+    this.game.addScore(gameProperties.score.memberTrapped);
     this.members[payload.memberId].status = enums.member.Status.waiting;
   }
 
@@ -250,7 +250,7 @@ export class RoundScene {
     console.log(events.round.memberArrived, payload);
     this.arrivedMembers.value++;
     this.arrivedMembers.points += gameProperties.score.memberArrived;
-    this.game.score += gameProperties.score.memberArrived;
+    this.game.addScore(gameProperties.score.memberArrived);
     this.members[payload.memberId].status = enums.member.Status.arrived;
     const membersArray = Object.values(this.members);
 
@@ -338,7 +338,7 @@ export class RoundScene {
       duration: this.duration,
       elapsedTime: this.elapsedTime,
       members: this.members,
-      gameScore: Math.abs(this.game.score),
+      gameScore: this.game.scoreValue,
       lives: this.game.lives,
       world: this.world,
     };
