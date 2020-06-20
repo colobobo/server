@@ -32,6 +32,11 @@ export class TransitionScene {
     emitGlobal<payloads.transition.Start>({ roomId: this.room.id, eventName: events.transition.start });
   }
 
+  next() {
+    console.log(events.transition.next);
+    emitGlobal<payloads.transition.NextSuccess>({ roomId: this.room.id, eventName: events.transition.nextSuccess });
+  }
+
   end() {
     console.log(events.transition.ended);
 
