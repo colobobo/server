@@ -160,14 +160,18 @@ export class RoundScene {
   }
 
   end(endType: enums.round.EndType, failCause: enums.round.FailCauses) {
+    const isRoundSuccess = endType === enums.round.EndType.success;
+    const roundTotalScore =
+      this.arrivedMembers.points + this.traps.points + (isRoundSuccess ? this.remainingTimeScore : 0);
     const gameData: round.EndInformation = {
       endType,
       failCause,
       ...this.information,
-      scoreDetails: {
+      roundScoreDetails: {
+        total: roundTotalScore,
         arrivedMembers: this.arrivedMembers,
         ...(this.traps.value > 0 && { traps: this.traps }),
-        ...(endType === enums.round.EndType.success && {
+        ...(isRoundSuccess && {
           remainingTime: { value: this.remainingTime, points: this.remainingTimeScore },
         }),
       },
@@ -332,7 +336,7 @@ export class RoundScene {
       duration: this.duration,
       elapsedTime: this.elapsedTime,
       members: this.members,
-      score: this.game.score,
+      gameScore: this.game.score,
       lives: this.game.lives,
       world: this.world,
     };
