@@ -66,7 +66,7 @@ export class RoundScene {
     const availableMembers = this.availableMembers;
     for (let i = 0; i < availableMembers; i++) {
       this.members[`member-${i + 1}`] = {
-        isDrag: false,
+        isDragged: false,
         skin: skins[i],
         status: enums.member.Status.waiting,
         manager: null,
@@ -218,14 +218,14 @@ export class RoundScene {
 
   memberDragStart(payload: payloads.round.MemberDragStart) {
     console.log(events.round.memberDragStart, payload);
-    this.members[payload.memberId].isDrag = true;
+    this.members[payload.memberId].isDragged = true;
     this.members[payload.memberId].status = enums.member.Status.active;
     this.members[payload.memberId].manager = payload.playerId;
   }
 
   memberDragEnd(payload: payloads.round.MemberDragEnd) {
     console.log(events.round.memberDragEnd, payload);
-    this.members[payload.memberId].isDrag = false;
+    this.members[payload.memberId].isDragged = false;
   }
 
   memberUpdateManager(payload: payloads.round.MemberUpdateManager) {
