@@ -17,7 +17,7 @@ export const gameProperties: game.Properties = {
         decreaseCoefficient: 0.95,
       },
       traps: {
-        defaultInterval: 12000,
+        defaultInterval: 5000,
         decreaseCoefficient: 0.98,
       },
     },
@@ -27,7 +27,7 @@ export const gameProperties: game.Properties = {
         decreaseCoefficient: 0.95,
       },
       traps: {
-        defaultInterval: 12000,
+        defaultInterval: 5000,
         decreaseCoefficient: 0.98,
       },
     },
@@ -37,7 +37,7 @@ export const gameProperties: game.Properties = {
         decreaseCoefficient: 0.95,
       },
       traps: {
-        defaultInterval: 12000,
+        defaultInterval: 5000,
         decreaseCoefficient: 0.98,
       },
     },
@@ -47,7 +47,7 @@ export const gameProperties: game.Properties = {
         decreaseCoefficient: 0.95,
       },
       traps: {
-        defaultInterval: 12000,
+        defaultInterval: 5000,
         decreaseCoefficient: 0.98,
       },
     },
