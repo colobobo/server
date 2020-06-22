@@ -13,11 +13,11 @@ export const gameProperties: game.Properties = {
   variables: {
     [3]: {
       duration: {
-        defaultValue: 45000,
+        defaultValue: 20000,
         decreaseCoefficient: 0.95,
       },
       traps: {
-        defaultInterval: 5000,
+        defaultInterval: 2000,
         decreaseCoefficient: 0.98,
       },
     },
