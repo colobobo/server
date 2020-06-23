@@ -219,7 +219,6 @@ export class RoundScene {
   memberDragStart(payload: payloads.round.MemberDragStart) {
     console.log(events.round.memberDragStart, payload);
     this.members[payload.memberId].isDragged = true;
-    this.members[payload.memberId].status = enums.member.Status.active;
     this.members[payload.memberId].manager = payload.playerId;
   }
 
