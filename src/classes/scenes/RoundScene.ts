@@ -118,7 +118,7 @@ export class RoundScene {
   }
 
   restart() {
-    this.tick = setInterval(() => this.emitTick, gameProperties.tick);
+    this.tick = setInterval(() => this.emitTick(), gameProperties.tick);
     this.timer = setTimeout(() => this.fail(enums.round.FailCauses.timer), this.remainingTime);
     this.startTimestamp = new Date();
   }
@@ -229,7 +229,6 @@ export class RoundScene {
   }
 
   memberUpdateManager(payload: payloads.round.MemberUpdateManager) {
-    console.log(events.round.memberUpdateManager, payload);
     this.members[payload.memberId].manager = payload.playerId;
   }
 
