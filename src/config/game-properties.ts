@@ -11,6 +11,26 @@ export const gameProperties: game.Properties = {
     memberTrapped: -5,
   },
   variables: {
+    [1]: {
+      duration: {
+        defaultValue: 400000,
+        decreaseCoefficient: 0.95,
+      },
+      traps: {
+        defaultInterval: 8000,
+        decreaseCoefficient: 0.98,
+      },
+    },
+    [2]: {
+      duration: {
+        defaultValue: 600000,
+        decreaseCoefficient: 0.95,
+      },
+      traps: {
+        defaultInterval: 5000,
+        decreaseCoefficient: 0.98,
+      },
+    },
     [3]: {
       duration: {
         defaultValue: 20000,
