@@ -15,7 +15,10 @@
     "watch-node": "nodemon dist/server.js",
     "start": "node dist/server.js",
     "watch": "nodemon",
-    "prettier": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\""
+    "prettier": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
+    "library:update": "npm update @colobobo/library",
+    "library:link": "npm link @colobobo/library",
+    "library:unlink": "npm unlink @colobobo/library"
   },
   "dependencies": {
     "@colobobo/library": "git+https://github.com/colobobo/library.git",
@@ -48,7 +51,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged & npm update @colobobo/library && git add package-lock.json"
+      "pre-commit": "lint-staged"
     }
   }
 }
